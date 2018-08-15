@@ -14,8 +14,10 @@ class PlayerDatabase {
 public:
   Player &lookup(std::string name);
   void initialize();
+  void PredictAll();
 private:
-  std::map<std::string, Player, StringCompare> player_map;
+  typedef std::map<std::string, Player, StringCompare> PlayerMap;
+  PlayerMap player_map;
   std::string BioFile();
   std::vector<std::string> IndFiles();
   std::vector<std::string> OnIceFiles();

@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include <iostream>
 
 std::string &Player::Name() {
   return name;
@@ -44,6 +45,10 @@ double Player::PenaltiesPerMinute() {
   return predicted_penalties_per_minute;
 }
 
+double Player::GoalsPerShotAgainst() {
+  return predicted_goals_per_shot_against;
+}
+
 bool Player::IsDefense() {
   Position fp = Positions()[0];
   return fp == Position::LD || Position::RD || Position::D;
@@ -51,6 +56,13 @@ bool Player::IsDefense() {
 
 bool Player::IsGoalie() {
   return Positions()[0] == Position::G;
+}
+
+bool Player::Ready() {
+  if (!predicted) {
+    std::cerr << "Player " << name << " not ready!" << std::endl;
+  }
+  return predicted;
 }
 
 void Player::Predict() {
@@ -73,6 +85,8 @@ void Player::Predict() {
       predicted_first_assists_per_on_ice_shot = 0.015;
       predicted_penalties_per_minute = 0.0118;
     }
+    predicted_goals_per_shot_against = 0.09; // sv pctg 0.910 ???
+    predicted = true;
     return;
   }
 
@@ -86,6 +100,8 @@ void Player::Predict() {
   predicted_goals_per_shot = ind.ShootingPercentage() / 100;
   predicted_first_assists_per_on_ice_shot = ((double)ind.FirstAssists()) / onice.Shots();
   predicted_penalties_per_minute = ((double)ind.Penalties()) / ind.TimeOnIce();
+  predicted_goals_per_shot_against = ((double)onice.GoalsAgainst())/onice.ShotsAgainst();
+  predicted = true;
 }
 
 void Player::ScoreGoal() {

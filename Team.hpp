@@ -17,6 +17,7 @@ public:
 
   Team(std::string name): name(name) { }
   std::string Name();
+  bool Ready();
   void loadTeam(std::string filename, PlayerDatabase &pdb);
 private:
   std::string name;

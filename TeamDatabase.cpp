@@ -17,6 +17,7 @@ Team &TeamDatabase::lookup(std::string name) {
     return (*team_map.find(name)).second;
   }
   std::cerr << "Team " << name << " was not found" << std::endl;
+  exit(1);
   return (*team_map.find(name)).second;
 }
 

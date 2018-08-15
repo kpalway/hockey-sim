@@ -76,9 +76,9 @@ void BioStats::loadData(std::vector<std::string> &data) {
   for (std::vector<std::string>::iterator it = str_pos.begin();
        it != str_pos.end(); std::advance(it, 1)) {
     Position ins;
-    if (0 == (*it).compare("LW")) {
+    if (0 == (*it).compare("LW") || 0 == (*it).compare("L")) {
       ins = Position::LW;
-    } else if (0 == (*it).compare("RW")) {
+    } else if (0 == (*it).compare("RW") || 0 == (*it).compare("R")) {
       ins = Position::RW;
     } else if (0 == (*it).compare("C")) {
       ins = Position::C;
@@ -95,20 +95,25 @@ void BioStats::loadData(std::vector<std::string> &data) {
   }
 
   std::vector<std::string> str_dob;
-  boost::split(str_dob, data[4], boost::is_any_of("-"));
+  boost::split(str_dob, data[5], boost::is_any_of("-"));
   birth_year = std::stoi(str_dob[0]);
   birth_month = std::stoi(str_dob[1]);
   birth_day = std::stoi(str_dob[2]);
 
-  birth_city = data[5];
-  birth_state = data[6];
-  birth_country = data[7];
-  nationality = data[8];
-  height = std::stoi(data[9]);
-  weight = std::stoi(data[10]);
-  draft_year = std::stoi(data[11]);
-  draft_team = data[12];
-  draft_round = std::stoi(data[13]);
-  round_pick = std::stoi(data[14]);
-  overall_draft_position = std::stoi(data[15]);
+  birth_city = data[6];
+  birth_state = data[7];
+  birth_country = data[8];
+  nationality = data[9];
+  height = std::stoi(data[10]);
+  weight = std::stoi(data[11]);
+  if (!(0 == data[12].compare("-"))) {
+    draft_year = std::stoi(data[12]);
+    draft_team = data[13];
+    draft_round = std::stoi(data[14]);
+    round_pick = std::stoi(data[15]);
+    overall_draft_position = std::stoi(data[16]);
+  }
+  else {
+    draft_year = 0;
+  }
 }

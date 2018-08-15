@@ -9,8 +9,7 @@
 
 class Player {
 public:
-  Player() { }
-  Player(std::string name) : name(name) { }
+  Player(std::string name) : name(name), predicted(false) { }
 
   std::string &Name();
   std::vector<Position> &Positions();
@@ -24,9 +23,11 @@ public:
   double ShotsPerShotAttempt();
   double GoalsPerShot();
   double FirstAssistsPerOnIceShot();
+  double GoalsPerShotAgainst();
 
   double PenaltiesPerMinute();
 
+  bool Ready();
   void Predict();
 
   void ScoreGoal();
@@ -43,12 +44,15 @@ private:
   std::vector<IndividualStats> individual;
   std::vector<OnIceStats> on_ice;
 
+  bool predicted;
   double predicted_on_ice_shot_attempts_per_minute;
   double predicted_shot_attempts_per_minute;
   double predicted_shots_per_shot_attempt;
   double predicted_goals_per_shot;
   double predicted_first_assists_per_on_ice_shot;
   double predicted_penalties_per_minute;
+
+  double predicted_goals_per_shot_against;
 
   int goals;
   int first_assists;
