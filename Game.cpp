@@ -5,6 +5,7 @@
 #include "Goal.hpp"
 #include "PeriodEnd.hpp"
 #include "LineChange.hpp"
+#include <iostream>
 
 #define PROB_ASSIST1 0.85
 #define PROB_ASSIST2 0.85
@@ -26,18 +27,21 @@ void Game::Simulate() {
   away_shift_remaining = SHIFT_LENGTH;
   home_goals = 0;
   away_goals = 0;
+  home_sit = away_sit = Situation::EV;
 
   home_LW = home_team.LW[0];
   home_C = home_team.C[0];
   home_RW = home_team.RW[0];
   home_LD = home_team.LD[0];
   home_RD = home_team.RD[0];
+  home_G = home_team.G[0];
 
   away_LW = away_team.LW[0];
   away_C = away_team.C[0];
   away_RW = away_team.RW[0];
   away_LD = away_team.LD[0];
   away_RD = away_team.RD[0];
+  away_G = away_team.G[0];
 
   while (!simulated) {
     DrawNextEvent();
@@ -52,6 +56,7 @@ void Game::PrintBoxScore() {
       game_log[i]->print();
     }
   }
+  std::cout << "Final: " << home_team.Name() << " " << home_goals << " - " << away_goals << " " << away_team.Name() << std::endl;
 }
 
 bool Game::HomeWins() {
@@ -120,11 +125,12 @@ bool Game::TrueWithProbability(double prob) {
   return dist(RNG) <= prob;
 }
 
-double Game::DrawFromExps(std::vector<double> &lambdas, uint &min_ind) {
+template <class T>
+double Game::DrawFromExps(std::vector< std::pair<double, T> > &lambdas, uint &min_ind) {
   double min_time = 999999;
   min_ind = 0;
   for (uint i = 0; i < lambdas.size(); i++) {
-    double time = DrawFromExp(lambdas[i]);
+    double time = DrawFromExp(lambdas[i].first);
     if (time < min_time) {
       min_time = time;
       min_ind = i;
@@ -135,17 +141,23 @@ double Game::DrawFromExps(std::vector<double> &lambdas, uint &min_ind) {
 
 Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
   std::vector<Player*> candidates;
+  Situation sit = away_sit;
   if (home) {
+    sit = home_sit;
     candidates.push_back(home_LW);
     candidates.push_back(home_C);
-    candidates.push_back(home_RW);
+    if (home_sit != Situation::SH) {
+      candidates.push_back(home_RW);
+    }
     candidates.push_back(home_LD);
     candidates.push_back(home_RD);
   }
   else {
     candidates.push_back(away_LW);
     candidates.push_back(away_C);
-    candidates.push_back(away_RW);
+    if (away_sit != Situation::SH) {
+      candidates.push_back(away_RW);
+    }
     candidates.push_back(away_LD);
     candidates.push_back(away_RD);
   }
@@ -153,7 +165,7 @@ Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
 
   std::vector<double> probs;
   for (uint i = 0; i < candidates.size(); i++) {
-    probs.push_back(candidates[i]->FirstAssistsPerOnIceShot());
+    probs.push_back(candidates[i]->FirstAssistsPerOnIceShot(sit));
   }
   
   std::discrete_distribution<int> dist(probs.begin(), probs.end());
@@ -209,65 +221,69 @@ int Game::SelectDefLine(bool home) {
 
 void Game::DrawNextEvent() {
   // draw from distribution for each active player's shot attempt rate
-  std::vector<double> lambdas;
-  lambdas.push_back(home_LW->ShotAttemptsPerMinute());
-  lambdas.push_back(home_C->ShotAttemptsPerMinute());
-  lambdas.push_back(home_RW->ShotAttemptsPerMinute());
-  lambdas.push_back(home_LD->ShotAttemptsPerMinute());
-  lambdas.push_back(home_RD->ShotAttemptsPerMinute());
-  lambdas.push_back(away_LW->ShotAttemptsPerMinute());
-  lambdas.push_back(away_C->ShotAttemptsPerMinute());
-  lambdas.push_back(away_RW->ShotAttemptsPerMinute());
-  lambdas.push_back(away_LD->ShotAttemptsPerMinute());
-  lambdas.push_back(away_RD->ShotAttemptsPerMinute());
+  std::vector< std::pair<double, Player*> > lambdas;
+  lambdas.push_back(std::make_pair(home_LW->ShotAttemptsPerMinute(home_sit), home_LW));
+  lambdas.push_back(std::make_pair(home_C->ShotAttemptsPerMinute(home_sit), home_C));
+  if (home_sit != Situation::SH) {
+    lambdas.push_back(std::make_pair(home_RW->ShotAttemptsPerMinute(home_sit), home_RW));
+  }
+  lambdas.push_back(std::make_pair(home_LD->ShotAttemptsPerMinute(home_sit), home_LD));
+  lambdas.push_back(std::make_pair(home_RD->ShotAttemptsPerMinute(home_sit), home_RD));
+  lambdas.push_back(std::make_pair(away_LW->ShotAttemptsPerMinute(away_sit), away_LW));
+  lambdas.push_back(std::make_pair(away_C->ShotAttemptsPerMinute(away_sit), away_C));
+  if (away_sit !=  Situation::SH) {
+    lambdas.push_back(std::make_pair(away_RW->ShotAttemptsPerMinute(away_sit), away_RW));
+  }
+  lambdas.push_back(std::make_pair(away_LD->ShotAttemptsPerMinute(away_sit), away_LD));
+  lambdas.push_back(std::make_pair(away_RD->ShotAttemptsPerMinute(away_sit), away_RD));
   
   uint min_ind;
   double attempt_time = DrawFromExps(lambdas, min_ind);
+
+  uint pen_ind = 0;
+  double penalty_time = 9999999;
+  bool penalized_home = false;
+  Player *penalized;
+  if (home_sit == Situation::EV) {
+    std::vector< std::pair<double, Player*> > plambdas;
+    plambdas.push_back(std::make_pair(home_LW->PenaltiesPerMinute(home_sit), home_LW));
+    plambdas.push_back(std::make_pair(home_C->PenaltiesPerMinute(home_sit), home_C));
+    plambdas.push_back(std::make_pair(home_RW->PenaltiesPerMinute(home_sit), home_RW));
+    plambdas.push_back(std::make_pair(home_LD->PenaltiesPerMinute(home_sit), home_LD));
+    plambdas.push_back(std::make_pair(home_RD->PenaltiesPerMinute(home_sit), home_RD));
+    plambdas.push_back(std::make_pair(away_LW->PenaltiesPerMinute(away_sit), away_LW));
+    plambdas.push_back(std::make_pair(away_C->PenaltiesPerMinute(away_sit), away_C));
+    plambdas.push_back(std::make_pair(away_RW->PenaltiesPerMinute(away_sit), away_RW));
+    plambdas.push_back(std::make_pair(away_LD->PenaltiesPerMinute(away_sit), away_LD));
+    plambdas.push_back(std::make_pair(away_RD->PenaltiesPerMinute(away_sit), away_RD));
+
+    penalty_time = DrawFromExps(plambdas, pen_ind);
+    penalized = plambdas[pen_ind].second;
+    penalized_home = pen_ind <= 4;
+  }
   
   Player *shooter = NULL;
-  bool shooter_home = min_ind <= 4;
+  bool shooter_home = min_ind <= (home_sit == Situation::SH ? 3 : 4);
 
   std::string team = away_team.Name();
   if (shooter_home) {
     team = home_team.Name();
   }
 
-  switch (min_ind) {
-  case 0:
-    shooter = home_LW;
-    break;
-  case 1:
-    shooter = home_C;
-    break;
-  case 2:
-    shooter = home_RW;
-    break;
-  case 3:
-    shooter = home_LD;
-    break;
-  case 4:
-    shooter = home_RD;
-    break;
-  case 5:
-    shooter = away_LW;
-    break;
-  case 6:
-    shooter = away_C;
-    break;
-  case 7:
-    shooter = away_RW;
-    break;
-  case 8:
-    shooter = away_LD;
-    break;
-  case 9:
-    shooter = away_RD;
-    break;
+  std::string penalized_team = away_team.Name();
+  if (penalized_home) {
+    penalized_team = home_team.Name();
   }
 
+  shooter = lambdas[min_ind].second;
+
   Player *goalie = home_G;
+  Situation shooter_sit = away_sit;
+  Situation goalie_sit = home_sit;
   if (shooter_home) {
     goalie = away_G;
+    shooter_sit = home_sit;
+    goalie_sit = away_sit;
   }
 
   double period_remaining = 20 - time;
@@ -292,8 +308,8 @@ void Game::DrawNextEvent() {
   // shot attempt will happen
   else if (attempt_time < period_remaining) {
     // if shot goes on net
-    if (TrueWithProbability(shooter->ShotsPerShotAttempt())) {
-      double goal_prob = shooter->GoalsPerShot()/(1-goalie->GoalsPerShotAgainst()+shooter->GoalsPerShot());
+    if (TrueWithProbability(shooter->ShotsPerShotAttempt(shooter_sit))) {
+      double goal_prob = shooter->GoalsPerShot(shooter_sit)/(1-goalie->GoalsPerShotAgainst(goalie_sit)+shooter->GoalsPerShot(shooter_sit));
       // if shot goes in
       if (TrueWithProbability(goal_prob)) {
         Player *assist1 = NULL;

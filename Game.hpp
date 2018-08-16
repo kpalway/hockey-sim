@@ -5,12 +5,14 @@ class Game;
 class Event;
 class Penalty;
 
+#include <utility>
 #include <vector>
 #include <string>
 #include <random>
 #include "Team.hpp"
 #include "Penalty.hpp"
 #include "Player.hpp"
+#include "Situation.hpp"
 
 #define SHIFT_LENGTH 0.75
 
@@ -41,6 +43,7 @@ private:
   int home_goals;
   int away_goals;
   std::vector<Penalty> active_penalties;
+  Situation home_sit, away_sit;
 
   std::default_random_engine &RNG;
 
@@ -59,7 +62,8 @@ private:
   Player *away_G;
 
   double DrawFromExp(double lambda);
-  double DrawFromExps(std::vector<double> &lambdas, uint &min_ind);
+  template <class T>
+  double DrawFromExps(std::vector< std::pair<double, T> > &lambdas, uint &min_ind);
   bool TrueWithProbability(double prob);
   Player *ChooseFirstAssist(Player *scorer, bool home);
   Player *ChooseSecondAssist(Player *scorer, Player *assist1, bool home);

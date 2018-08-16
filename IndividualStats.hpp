@@ -14,7 +14,6 @@ public:
   int Points();
   int PrimaryPoints();
   int Shots();
-  double ShootingPercentage();
   int ShotAttempts();
   int UnblockedShotAttempts();
   int ScoringChances();
@@ -37,6 +36,14 @@ public:
   double FaceoffPercentage();
 
   void loadData(std::vector<std::string> &data);
+  void AddStats(IndividualStats &other);
+
+  IndividualStats(): games_played(0), time_on_ice(0), goals(0), first_assists(0),
+    second_assists(0), shots(0), shot_attempts(0), unblocked_shot_attempts(0),
+    scoring_chances(0), high_danger_scoring_chances(0), rush_attempts(0),
+    rebounds_created(0), penalty_minutes(0), minor_penalties(0), major_penalties(0),
+    misconducts(0), penalties_drawn(0), giveaways(0), takeaways(0), hits(0),
+    hits_taken(0), shots_blocked(0), faceoffs_won(0), faceoffs_lost(0) { }
 private:
   int games_played;
   double time_on_ice;
@@ -44,7 +51,6 @@ private:
   int first_assists;
   int second_assists;
   int shots;
-  double shooting_percentage;
   int shot_attempts;
   int unblocked_shot_attempts;
   int scoring_chances;

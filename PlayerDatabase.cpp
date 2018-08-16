@@ -12,40 +12,43 @@ Player &PlayerDatabase::lookup(std::string name) {
   return res->second;
 }
 
-#define PREVIOUS_YEARS 1
+// the length of years[]
+#define PAST_YEARS 1
 
-static std::string indFiles[] = {
-  "17-18individual.csv"
+static std::string years[] = {
+  "17-18"
 };
 
-static std::string onIceFiles[] = {
-  "17-18on-ice.csv"
-};
+static std::string statsPrefix = "/u/kpalway/hock/stats/";
 
-static std::string biosFile = "17-18bios.csv";
+static std::string biosFile = "bios.csv";
 
-std::vector<std::string> PlayerDatabase::IndFiles() {
-  std::vector<std::string> files;
-  for (int i = 0; i < PREVIOUS_YEARS; i++) {
-    files.push_back("/u/kpalway/hock/stats/" + indFiles[i]);
+void PlayerDatabase::loadStatFile(std::string year, Situation sit, bool ind) {
+  std::string fname = statsPrefix + year + (sit == Situation::PP ? "pp-" :
+    (sit == Situation::SH ? "sh-" : "")) + (ind ? "individual" : "on-ice")
+    + ".csv";
+  std::vector< std::vector<std::string> > inds = CSV::ToMatrix(fname);
+  for (uint j = 1; j < inds.size(); j++) {
+    std::string name = inds[j][1];
+    PlayerMap::iterator p_it = player_map.find(name);
+    if (p_it == player_map.end()) {
+      continue;
+    }
+    if (ind) {
+      IndividualStats stat;
+      stat.loadData(inds[j]);
+      p_it->second.addIndividualStats(sit, stat);
+    }
+    else {
+      OnIceStats stat;
+      stat.loadData(inds[j]);
+      p_it->second.addOnIceStats(sit, stat);
+    }
   }
-  return files;
-}
-
-std::vector<std::string> PlayerDatabase::OnIceFiles() {
-  std::vector<std::string> files;
-  for (int i = 0; i < PREVIOUS_YEARS; i++) {
-    files.push_back("/u/kpalway/hock/stats/" + onIceFiles[i]);
-  }
-  return files;
-}
-
-std::string PlayerDatabase::BioFile() {
-  return "/u/kpalway/hock/stats/" + biosFile;
 }
 
 void PlayerDatabase::initialize() {
-  std::vector< std::vector<std::string> > bios = CSV::ToMatrix(BioFile());
+  std::vector< std::vector<std::string> > bios = CSV::ToMatrix(statsPrefix + biosFile);
 
   // Init player and set bio
   for (uint i = 1; i < bios.size(); i++) {
@@ -56,33 +59,20 @@ void PlayerDatabase::initialize() {
     player_map.find(name)->second.setBio(stat);
   }
 
-  // individual stats
-  std::vector<std::string> ifiles = IndFiles();
-  for (uint i = 0; i < ifiles.size(); i++) {
-    std::vector< std::vector<std::string> > inds = CSV::ToMatrix(ifiles[i]);
-    for (uint j = 1; j < inds.size(); j++) {
-      std::string name = inds[j][1];
-      IndividualStats stat;
-      stat.loadData(inds[j]);
-      player_map.find(name)->second.addIndividualStats(stat);
-    }
-  }
-
-  // on-ice stats
-  std::vector<std::string> ofiles = OnIceFiles();
-  for (uint i = 0; i < ofiles.size(); i++) {
-    std::vector< std::vector<std::string> > on_ices = CSV::ToMatrix(ofiles[i]);
-    for (uint j = 1; j < on_ices.size(); j++) {
-      std::string name = on_ices[j][1];
-      OnIceStats stat;
-      stat.loadData(on_ices[j]);
-      player_map.find(name)->second.addOnIceStats(stat);
-    }
+  // iterate through available years of data
+  //  for individual and on-ice stats
+  for (int i = 0; i < PAST_YEARS; i++) {
+    loadStatFile(years[i], Situation::EV, true);
+    loadStatFile(years[i], Situation::EV, false);
+    loadStatFile(years[i], Situation::PP, true);
+    loadStatFile(years[i], Situation::PP, false);
+    loadStatFile(years[i], Situation::SH, true);
+    loadStatFile(years[i], Situation::SH, false);
   }
 }
 
-void PlayerDatabase::PredictAll() {
+void PlayerDatabase::PredictAll(Replacement &repl) {
   for (PlayerMap::iterator it = player_map.begin(); it != player_map.end(); it++) {
-    it->second.Predict();
+    it->second.Predict(repl);
   }
 }

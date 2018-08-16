@@ -36,10 +36,6 @@ int IndividualStats::Shots() {
   return shots;
 }
 
-double IndividualStats::ShootingPercentage() {
-  return shooting_percentage;
-}
-
 int IndividualStats::ShotAttempts() {
   return shot_attempts;
 }
@@ -127,7 +123,6 @@ void IndividualStats::loadData(std::vector<std::string> &data) {
   first_assists = std::stoi(data[8]);
   second_assists = std::stoi(data[9]);
   shots = std::stoi(data[11]);
-  shooting_percentage = std::stod(data[12]);
   shot_attempts = std::stoi(data[13]);
   unblocked_shot_attempts = std::stoi(data[14]);
   scoring_chances = std::stoi(data[15]);
@@ -146,4 +141,31 @@ void IndividualStats::loadData(std::vector<std::string> &data) {
   shots_blocked = std::stoi(data[29]);
   faceoffs_won = std::stoi(data[30]);
   faceoffs_lost = std::stoi(data[31]);
+}
+
+void IndividualStats::AddStats(IndividualStats &other) {
+  games_played += other.games_played;
+  time_on_ice += other.time_on_ice;
+  goals += other.goals;
+  first_assists += other.first_assists;
+  second_assists += other.second_assists;
+  shots += other.shots;
+  shot_attempts += other.shot_attempts;
+  unblocked_shot_attempts += other.unblocked_shot_attempts;
+  scoring_chances += other.scoring_chances;
+  high_danger_scoring_chances += other.high_danger_scoring_chances;
+  rush_attempts += other.rush_attempts;
+  rebounds_created += other.rebounds_created;
+  penalty_minutes += other.penalty_minutes;
+  minor_penalties += other.minor_penalties;
+  major_penalties += other.major_penalties;
+  misconducts += other.misconducts;
+  penalties_drawn += other.penalties_drawn;
+  giveaways += other.giveaways;
+  takeaways += other.takeaways;
+  hits += other.hits;
+  hits_taken += other.hits_taken;
+  shots_blocked += other.shots_blocked;
+  faceoffs_won += other.faceoffs_won;
+  faceoffs_lost += other.faceoffs_lost;
 }

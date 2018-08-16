@@ -1,11 +1,13 @@
+#ifndef PLAYER_HPP
+#define PLAYER_HPP
+
 #include <string>
 #include "Position.hpp"
 #include "BioStats.hpp"
 #include "IndividualStats.hpp"
 #include "OnIceStats.hpp"
-
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#include "Situation.hpp"
+#include "Replacement.hpp"
 
 class Player {
 public:
@@ -14,21 +16,22 @@ public:
   std::string &Name();
   std::vector<Position> &Positions();
 
-  void setBio(BioStats bio);
-  void addIndividualStats(IndividualStats ind);
-  void addOnIceStats(OnIceStats on_ice);
+  void setBio(BioStats &bio);
+  void addIndividualStats(Situation sit, IndividualStats &ind);
+  void addOnIceStats(Situation sit, OnIceStats &on_ice);
+  IndividualStats &LastSeasonIndividual(Situation sit);
+  OnIceStats &LastSeasonOnIce(Situation sit);
 
-  double OnIceShotAttemptsPerMinute();
-  double ShotAttemptsPerMinute();
-  double ShotsPerShotAttempt();
-  double GoalsPerShot();
-  double FirstAssistsPerOnIceShot();
-  double GoalsPerShotAgainst();
-
-  double PenaltiesPerMinute();
+  double OnIceShotAttemptsPerMinute(Situation sit);
+  double ShotAttemptsPerMinute(Situation sit);
+  double ShotsPerShotAttempt(Situation sit);
+  double GoalsPerShot(Situation sit);
+  double FirstAssistsPerOnIceShot(Situation sit);
+  double GoalsPerShotAgainst(Situation sit);
+  double PenaltiesPerMinute(Situation sit);
 
   bool Ready();
-  void Predict();
+  void Predict(Replacement &repl);
 
   void ScoreGoal();
   void ScoreFirstAssist();
@@ -41,18 +44,36 @@ public:
 private:
   std::string name;
   BioStats bio;
+  IndividualStats total_individual;
+  IndividualStats total_pp_individual;
+  IndividualStats total_sh_individual;
   std::vector<IndividualStats> individual;
+  std::vector<IndividualStats> pp_individual;
+  std::vector<IndividualStats> sh_individual;
+  OnIceStats total_on_ice;
+  OnIceStats total_pp_on_ice;
+  OnIceStats total_sh_on_ice;
   std::vector<OnIceStats> on_ice;
+  std::vector<OnIceStats> pp_on_ice;
+  std::vector<OnIceStats> sh_on_ice;
 
   bool predicted;
-  double predicted_on_ice_shot_attempts_per_minute;
-  double predicted_shot_attempts_per_minute;
-  double predicted_shots_per_shot_attempt;
-  double predicted_goals_per_shot;
-  double predicted_first_assists_per_on_ice_shot;
-  double predicted_penalties_per_minute;
+  struct Prediction {
+    double on_ice_shot_attempts_per_minute;
+    double shot_attempts_per_minute;
+    double shots_per_shot_attempt;
+    double goals_per_shot;
+    double first_assists_per_on_ice_shot;
+    double penalties_per_minute;
 
-  double predicted_goals_per_shot_against;
+    double goals_per_shot_against;
+  };
+
+  Prediction pred;
+  Prediction pp_pred;
+  Prediction sh_pred;
+
+  Prediction &SituationPrediction(Situation sit);
 
   int goals;
   int first_assists;

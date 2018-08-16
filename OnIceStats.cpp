@@ -131,3 +131,23 @@ void OnIceStats::loadData(std::vector<std::string> &data) {
   neutral_zone_faceoffs = std::stoi(data[31]);
   defensive_zone_faceoffs = std::stoi(data[32]);
 }
+
+void OnIceStats::AddStats(OnIceStats &other) {
+  shot_attempts += other.shot_attempts;
+  shot_attempts_against += other.shot_attempts_against;
+  unblocked_shot_attempts += other.unblocked_shot_attempts;
+  unblocked_shot_attempts_against += other.unblocked_shot_attempts_against;
+  shots += other.shots;
+  shots_against += other.shots_against;
+  goals += other.goals;
+  goals_against += other.goals_against;
+  scoring_chances += other.scoring_chances;
+  scoring_chances_against += other.scoring_chances_against;
+  high_danger_scoring_chances += other.high_danger_scoring_chances;
+  high_danger_scoring_chances_against += other.high_danger_scoring_chances_against;
+  high_danger_goals += other.high_danger_goals;
+  high_danger_goals_against += other.high_danger_goals_against;
+  offensive_zone_faceoffs += other.offensive_zone_faceoffs;
+  neutral_zone_faceoffs += other.neutral_zone_faceoffs;
+  defensive_zone_faceoffs += other.defensive_zone_faceoffs;
+}

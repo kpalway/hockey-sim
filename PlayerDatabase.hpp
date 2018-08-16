@@ -1,9 +1,12 @@
+#ifndef PLAYERDATABASE_HPP
+#define PLAYERDATABASE_HPP
+
 #include <map>
 #include <string>
 #include "Player.hpp"
+#include "Situation.hpp"
 
-#ifndef PLAYERDATABASE_HPP
-#define PLAYERDATABASE_HPP
+class Replacement;
 
 class PlayerDatabase {
   struct StringCompare {
@@ -14,11 +17,11 @@ class PlayerDatabase {
 public:
   Player &lookup(std::string name);
   void initialize();
-  void PredictAll();
+  void PredictAll(Replacement &repl);
 private:
+  void loadStatFile(std::string year, Situation sit, bool ind);
   typedef std::map<std::string, Player, StringCompare> PlayerMap;
   PlayerMap player_map;
-  std::string BioFile();
   std::vector<std::string> IndFiles();
   std::vector<std::string> OnIceFiles();
 };

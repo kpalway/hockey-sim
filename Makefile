@@ -11,7 +11,7 @@ CFLAGS = -Wall -g -std=c++11 -funroll-loops -ffast-math -O3
 	#$(CC) -c -MMD -MT $*.d $(CFLAGS) $(INCLUDES) $< -o $@
 
 TARGET = hockey-sim
-OFILES = main.o Player.o PlayerDatabase.o Team.o TeamDatabase.o IndividualStats.o OnIceStats.o BioStats.o CSV.o Game.o Event.o ShotAttempt.o Shot.o Goal.o PeriodEnd.o LineChange.o Penalty.o
+OFILES = main.o Player.o PlayerDatabase.o Team.o TeamDatabase.o IndividualStats.o OnIceStats.o BioStats.o CSV.o Game.o Event.o ShotAttempt.o Shot.o Goal.o PeriodEnd.o LineChange.o Penalty.o Simulator.o Replacement.o
 
 CPPFILES = $(OFILES:.o=.cpp)
 DFILES = $(OFILES:.o=.d)

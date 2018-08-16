@@ -35,6 +35,14 @@ public:
   double OffensiveZoneFaceoffPercentage();
 
   void loadData(std::vector<std::string> &data);
+  void AddStats(OnIceStats &other);
+
+  OnIceStats(): shot_attempts(0), shot_attempts_against(0), unblocked_shot_attempts(0),
+    unblocked_shot_attempts_against(0), shots(0), shots_against(0), goals(0),
+    goals_against(0), scoring_chances(0), scoring_chances_against(0),
+    high_danger_scoring_chances(0), high_danger_scoring_chances_against(0),
+    high_danger_goals(0), high_danger_goals_against(0), offensive_zone_faceoffs(0),
+    neutral_zone_faceoffs(0), defensive_zone_faceoffs(0) { }
 private:
   int shot_attempts;
   int shot_attempts_against;
