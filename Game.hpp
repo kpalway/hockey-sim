@@ -31,6 +31,11 @@ public:
   void SetTime(double time);
   void NextPeriod();
   bool IsHome(std::string &team);
+  void AddPenalty(Penalty *pen);
+  void RemovePenalty(Penalty *pen);
+  double PenaltyRemaining();
+  bool EvenStrength();
+  void SetEvenStrength();
 private:
   Team &home_team;
   Team &away_team;
@@ -42,7 +47,7 @@ private:
   double away_shift_remaining;
   int home_goals;
   int away_goals;
-  std::vector<Penalty> active_penalties;
+  std::vector<Penalty*> active_penalties;
   Situation home_sit, away_sit;
 
   std::default_random_engine &RNG;

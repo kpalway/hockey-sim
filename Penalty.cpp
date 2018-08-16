@@ -10,3 +10,7 @@ void Penalty::apply() {
   Event::apply();
   // TODO
 }
+
+double Penalty::Remaining() {
+  return remaining;
+}

@@ -7,12 +7,15 @@ class Player;
 
 class Penalty : public Event {
 public:
-  Penalty(Game &game, int period, double time, Player *offender):
-    Event(EventType::PENALTY, game, period, time), offender(offender) { }
+  Penalty(Game &game, int period, double time, std::string team, Player *offender):
+    Event(EventType::PENALTY, game, period, time), team(team), offender(offender), remaining(2) { }
   void print();
   void apply();
+  double Remaining();
 private:
+  std::string team;
   Player *offender;
+  double remaining;
 };
 
 #endif // PENALTY_HPP

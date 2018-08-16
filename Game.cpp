@@ -5,6 +5,7 @@
 #include "Goal.hpp"
 #include "PeriodEnd.hpp"
 #include "LineChange.hpp"
+#include "PenaltyEnd.hpp"
 #include <iostream>
 
 #define PROB_ASSIST1 0.85
@@ -219,6 +220,45 @@ int Game::SelectDefLine(bool home) {
   return dist(RNG);
 }
 
+// when penalty ends
+void Game::SetEvenStrength() {
+  home_sit = Situation::EV;
+  away_sit = Situation::EV;
+  int hfwd = SelectFwdLine(true);
+  int hdef = SelectDefLine(true);
+  int afwd = SelectFwdLine(false);
+  int adef = SelectDefLine(false);
+  home_LW = home_team.LW[hfwd];
+  home_C = home_team.C[hfwd];
+  home_RW = home_team.RW[hfwd];
+  home_LD = home_team.LD[hdef];
+  home_RD = home_team.RD[hdef];
+  away_LW = away_team.LW[afwd];
+  away_C = away_team.C[afwd];
+  away_RW = away_team.RW[afwd];
+  away_LD = away_team.LD[adef];
+  away_RD = away_team.RD[adef];
+}
+
+bool Game::EvenStrength() {
+  return home_sit == Situation::EV;
+}
+
+void Game::AddPenalty(Penalty *pen) {
+  active_penalties.push_back(pen);
+}
+
+void Game::RemovePenalty(Penalty *pen) {
+  active_penalties.erase(std::remove(active_penalties.begin(), active_penalties.end(), pen), active_penalties.end());
+}
+
+double Game::PenaltyRemaining() {
+  if (active_penalties.size() == 0) {
+    return 0;
+  }
+  return active_penalties[0]->Remaining();
+}
+
 void Game::DrawNextEvent() {
   // draw from distribution for each active player's shot attempt rate
   std::vector< std::pair<double, Player*> > lambdas;
@@ -243,7 +283,7 @@ void Game::DrawNextEvent() {
   uint pen_ind = 0;
   double penalty_time = 9999999;
   bool penalized_home = false;
-  Player *penalized;
+  Player *penalized = NULL;
   if (home_sit == Situation::EV) {
     std::vector< std::pair<double, Player*> > plambdas;
     plambdas.push_back(std::make_pair(home_LW->PenaltiesPerMinute(home_sit), home_LW));
@@ -306,7 +346,7 @@ void Game::DrawNextEvent() {
       home_team.LD[def_line], home_team.RD[def_line]);
   }
   // shot attempt will happen
-  else if (attempt_time < period_remaining) {
+  else if (attempt_time < penalty_time && attempt_time < period_remaining && (EvenStrength() || attempt_time < PenaltyRemaining())) {
     // if shot goes on net
     if (TrueWithProbability(shooter->ShotsPerShotAttempt(shooter_sit))) {
       double goal_prob = shooter->GoalsPerShot(shooter_sit)/(1-goalie->GoalsPerShotAgainst(goalie_sit)+shooter->GoalsPerShot(shooter_sit));
@@ -334,6 +374,14 @@ void Game::DrawNextEvent() {
     else {
       ev = new ShotAttempt(*this, period, time + attempt_time, shooter);
     }
+  }
+  // penalty occurs
+  else if (EvenStrength() && penalty_time < period_remaining) {
+    ev = new Penalty(*this, period, time + penalty_time, penalized_team, penalized);
+  }
+  // penalty ends
+  else if (!EvenStrength() && attempt_time >= PenaltyRemaining()) {
+    ev = new PenaltyEnd(*this, period, time + PenaltyRemaining(), active_penalties[0]);
   }
   // period ends
   else {

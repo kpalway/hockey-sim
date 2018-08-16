@@ -9,7 +9,8 @@ enum EventType {
   GOAL,
   PERIOD_END,
   LINE_CHANGE,
-  PENALTY
+  PENALTY,
+  PENALTY_END
 };
 
 class Event {
