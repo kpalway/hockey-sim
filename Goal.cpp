@@ -4,6 +4,13 @@
 #include "Game.hpp"
 
 void Goal::print() {
+  Event::print();
+  if (sit == Situation::PP) {
+    std::cout << "PP ";
+  }
+  else if (sit == Situation::SH) {
+    std::cout << "SH ";
+  }
   std::cout << "Goal scored by " << scorer->Name() << " (";
   if (assist1 != NULL && assist2 != NULL) {
     std::cout << assist1->Name() << ", " << assist2->Name();
@@ -22,11 +29,15 @@ void Goal::apply() {
 
   game.AddGoal(team);
 
-  scorer->ScoreGoal();
+  scorer->AddGoal(sit);
   if (assist1 != NULL) {
-    assist1->ScoreFirstAssist();
+    assist1->AddFirstAssist(sit);
   }
   if (assist2 != NULL) {
-    assist2->ScoreSecondAssist();
+    assist2->AddSecondAssist(sit);
+  }
+
+  if (sit == Situation::PP) {
+    game.SetEvenStrength();
   }
 }

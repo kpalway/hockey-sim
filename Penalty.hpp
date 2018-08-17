@@ -12,6 +12,7 @@ public:
   void print();
   void apply();
   double Remaining();
+  void RemoveTime(double time);
 private:
   std::string team;
   Player *offender;

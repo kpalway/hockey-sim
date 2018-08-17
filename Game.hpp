@@ -15,6 +15,7 @@ class Penalty;
 #include "Situation.hpp"
 
 #define SHIFT_LENGTH 0.75
+#define PP_SHIFT_LENGTH 1.25
 
 class Game {
 public:
@@ -26,6 +27,8 @@ public:
   bool HomeWins();
   bool Tied();
 
+  void AddShotAttempt(std::string team);
+  void AddShot(std::string team);
   void AddGoal(std::string team);
   void SetActiveLine(std::string team, Player *LW, Player *C, Player *RW, Player *LD, Player *RD);
   void SetTime(double time);
@@ -36,6 +39,7 @@ public:
   double PenaltyRemaining();
   bool EvenStrength();
   void SetEvenStrength();
+  void SetPowerPlay(bool home);
 private:
   Team &home_team;
   Team &away_team;
@@ -65,6 +69,10 @@ private:
   Player *away_LD;
   Player *away_RD;
   Player *away_G;
+
+  std::vector<Player*> HomeActive();
+  std::vector<Player*> AwayActive();
+  void AddStat(bool home, bool goal, bool shot);
 
   double DrawFromExp(double lambda);
   template <class T>

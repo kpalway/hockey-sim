@@ -21,13 +21,9 @@ Team &TeamDatabase::lookup(std::string name) {
   return (*team_map.find(name)).second;
 }
 
-std::string TeamDatabase::RosterFilename(std::string team) {
-  return "/u/kpalway/hock/rosters/" + team + ".csv";
-}
-
 void TeamDatabase::initialize(PlayerDatabase &pdb) {
   for (int i = 0; i < NUM_TEAMS; i++) {
     team_map.emplace(team_names[i], team_names[i]);
-    (*team_map.find(team_names[i])).second.loadTeam(RosterFilename(team_names[i]), pdb);
+    (*team_map.find(team_names[i])).second.loadTeam(pdb);
   }
 }

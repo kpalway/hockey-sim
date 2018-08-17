@@ -30,14 +30,30 @@ public:
   double GoalsPerShotAgainst(Situation sit);
   double PenaltiesPerMinute(Situation sit);
 
+  double PKMinutesPerGame();
+  int GamesPlayed();
+  int Points();
+  void PrintIndividualStats();
+
   bool Ready();
   void Predict(Replacement &repl);
 
-  void ScoreGoal();
-  void ScoreFirstAssist();
-  void ScoreSecondAssist();
-  void ScoreGoalAgainst();
+  void AddGamePlayed();
+  void AddTimeOnIce(Situation sit, double time);
+  void AddShotAttempt(Situation sit);
+  void AddShotAttemptFor(Situation sit);
+  void AddShotAttemptAgainst(Situation sit);
+  void AddShot(Situation sit);
+  void AddShotFor(Situation sit);
+  void AddShotAgainst(Situation sit);
+  void AddGoal(Situation sit);
+  void AddGoalFor(Situation sit);
+  void AddGoalAgainst(Situation sit);
+  void AddFirstAssist(Situation sit);
+  void AddSecondAssist(Situation sit);
+  void AddPenalty();
 
+  bool IsForward();
   bool IsDefense();
   bool IsGoalie();
 
@@ -57,6 +73,9 @@ private:
   std::vector<OnIceStats> pp_on_ice;
   std::vector<OnIceStats> sh_on_ice;
 
+  IndividualStats current_individual[3];
+  OnIceStats current_on_ice[3];
+
   bool predicted;
   struct Prediction {
     double on_ice_shot_attempts_per_minute;
@@ -74,11 +93,6 @@ private:
   Prediction sh_pred;
 
   Prediction &SituationPrediction(Situation sit);
-
-  int goals;
-  int first_assists;
-  int second_assists;
-  int goals_against;
 };
 
 #endif // PLAYER_HPP

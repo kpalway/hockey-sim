@@ -15,7 +15,6 @@ public:
   Team &lookup(std::string name);
   void initialize(PlayerDatabase &pdb);
 private:
-  std::string RosterFilename(std::string team);
   std::map<std::string, Team, StringCompare> team_map;
 };
 

@@ -99,13 +99,42 @@ double Player::PenaltiesPerMinute(Situation sit) {
   return SituationPrediction(sit).penalties_per_minute;
 }
 
+double Player::PKMinutesPerGame() {
+  return total_sh_individual.TimeOnIce() / total_individual.GamesPlayed();
+}
+
+int Player::GamesPlayed() {
+  return current_individual[Situation::EV].GamesPlayed();
+}
+
+int Player::Points() {
+  int points = 0;
+  for (int i = 0; i < 3; i++) {
+    points += current_individual[i].Points();
+  }
+  return points;
+}
+
+void Player::PrintIndividualStats() {
+  IndividualStats total;
+  for (uint i = 0; i < 3; i++) {
+    total.AddStats(current_individual[i]);
+  }
+  total.Print(name);
+}
+
 double Player::GoalsPerShotAgainst(Situation sit) {
   return SituationPrediction(sit).goals_per_shot_against;
 }
 
+bool Player::IsForward() {
+  Position fp = Positions()[0];
+  return fp == Position::LW || fp == Position::C || fp == Position::RW;
+}
+
 bool Player::IsDefense() {
   Position fp = Positions()[0];
-  return fp == Position::LD || Position::RD || Position::D;
+  return fp == Position::LD || fp == Position::RD || fp == Position::D;
 }
 
 bool Player::IsGoalie() {
@@ -133,10 +162,10 @@ void Player::Predict(Replacement &repl) {
   OnIceStats &sh_onice = total_sh_on_ice;
 
   // EVEN STRENGTH PREDICTIONS
-  // If insufficient data is found, assume replacement level
-  if (individual.size() == 0 || individual[0].TimeOnIce() < 200) {
-    ind = repl.Individual(Situation::EV, Positions()[0]);
-    onice = repl.OnIce(Situation::EV, Positions()[0]);
+  // If insufficient data is found, add in replacement level stats
+  if (ind.TimeOnIce() < 300) {
+    ind.AddStats(repl.Individual(Situation::EV, Positions()[0]));
+    onice.AddStats(repl.OnIce(Situation::EV, Positions()[0]));
   }
   pred.on_ice_shot_attempts_per_minute = ((double)onice.Shots()) / ind.TimeOnIce();
   pred.shot_attempts_per_minute = ((double)ind.ShotAttempts()) / ind.TimeOnIce();
@@ -146,9 +175,9 @@ void Player::Predict(Replacement &repl) {
   pred.penalties_per_minute = ((double)ind.Penalties()) / ind.TimeOnIce();
   pred.goals_per_shot_against = ((double)onice.GoalsAgainst())/onice.ShotsAgainst();
 
-  if (pp_individual.size() == 0 || pp_individual[0].TimeOnIce() < 100) {
-    pp_ind = repl.Individual(Situation::PP, Positions()[0]);
-    pp_onice = repl.OnIce(Situation::PP, Positions()[0]);
+  if (pp_ind.TimeOnIce() < 100) {
+    pp_ind.AddStats(repl.Individual(Situation::PP, Positions()[0]));
+    pp_onice.AddStats(repl.OnIce(Situation::PP, Positions()[0]));
   }
   pp_pred.shot_attempts_per_minute = ((double)pp_ind.ShotAttempts())/pp_ind.TimeOnIce();
   pp_pred.shots_per_shot_attempt = ((double)pp_ind.Shots())/pp_ind.ShotAttempts();
@@ -156,9 +185,9 @@ void Player::Predict(Replacement &repl) {
   pp_pred.first_assists_per_on_ice_shot = ((double)pp_ind.FirstAssists())/pp_onice.Shots();
   pp_pred.goals_per_shot_against = ((double)pp_onice.GoalsAgainst())/pp_onice.ShotsAgainst();
 
-  if (sh_individual.size() == 0 || sh_individual[0].TimeOnIce() < 100) {
-    sh_ind = repl.Individual(Situation::SH, Positions()[0]);
-    sh_onice = repl.OnIce(Situation::SH, Positions()[0]);
+  if (sh_ind.TimeOnIce() < 100) {
+    sh_ind.AddStats(repl.Individual(Situation::SH, Positions()[0]));
+    sh_onice.AddStats(repl.OnIce(Situation::SH, Positions()[0]));
   }
   sh_pred.shot_attempts_per_minute = ((double)sh_ind.ShotAttempts())/sh_ind.TimeOnIce();
   sh_pred.shots_per_shot_attempt = ((double)sh_ind.Shots())/sh_ind.ShotAttempts();
@@ -169,18 +198,58 @@ void Player::Predict(Replacement &repl) {
   predicted = true;
 }
 
-void Player::ScoreGoal() {
-  goals++;
+void Player::AddGamePlayed() {
+  current_individual[Situation::EV].AddGamePlayed();
 }
 
-void Player::ScoreFirstAssist() {
-  first_assists++;
+void Player::AddTimeOnIce(Situation sit, double time) {
+  current_individual[sit].AddTimeOnIce(time);
 }
 
-void Player::ScoreSecondAssist() {
-  second_assists++;
+void Player::AddShotAttempt(Situation sit) {
+  current_individual[sit].AddShotAttempt();
 }
 
-void Player::ScoreGoalAgainst() {
-  goals_against++;
+void Player::AddShotAttemptFor(Situation sit) {
+  current_on_ice[sit].AddShotAttempt();
+}
+
+void Player::AddShotAttemptAgainst(Situation sit) {
+  current_on_ice[sit].AddShotAttemptAgainst();
+}
+
+void Player::AddShot(Situation sit) {
+  current_individual[sit].AddShot();
+}
+
+void Player::AddShotFor(Situation sit) {
+  current_on_ice[sit].AddShot();
+}
+
+void Player::AddShotAgainst(Situation sit) {
+  current_on_ice[sit].AddShotAgainst();
+}
+
+void Player::AddGoal(Situation sit) {
+  current_individual[sit].AddGoal();
+}
+
+void Player::AddGoalFor(Situation sit) {
+  current_on_ice[sit].AddGoal();
+}
+
+void Player::AddGoalAgainst(Situation sit) {
+  current_on_ice[sit].AddGoalAgainst();
+}
+
+void Player::AddFirstAssist(Situation sit) {
+  current_individual[sit].AddFirstAssist();
+}
+
+void Player::AddSecondAssist(Situation sit) {
+  current_individual[sit].AddSecondAssist();
+}
+
+void Player::AddPenalty() {
+  current_individual[Situation::EV].AddPenalty();
 }

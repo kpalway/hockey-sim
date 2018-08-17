@@ -38,6 +38,18 @@ public:
   void loadData(std::vector<std::string> &data);
   void AddStats(IndividualStats &other);
 
+  void AddGamePlayed();
+  void AddTimeOnIce(double time);
+  void AddShotAttempt();
+  void AddShot();
+  void AddGoal();
+  void AddFirstAssist();
+  void AddSecondAssist();
+  void AddPenalty();
+
+  static void PrintHeading();
+  void Print(std::string player);
+
   IndividualStats(): games_played(0), time_on_ice(0), goals(0), first_assists(0),
     second_assists(0), shots(0), shot_attempts(0), unblocked_shot_attempts(0),
     scoring_chances(0), high_danger_scoring_chances(0), rush_attempts(0),

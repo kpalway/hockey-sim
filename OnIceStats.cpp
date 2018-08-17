@@ -151,3 +151,27 @@ void OnIceStats::AddStats(OnIceStats &other) {
   neutral_zone_faceoffs += other.neutral_zone_faceoffs;
   defensive_zone_faceoffs += other.defensive_zone_faceoffs;
 }
+
+void OnIceStats::AddShotAttempt() {
+  shot_attempts++;
+}
+
+void OnIceStats::AddShotAttemptAgainst() {
+  shot_attempts_against++;
+}
+
+void OnIceStats::AddShot() {
+  shots++;
+}
+
+void OnIceStats::AddShotAgainst() {
+  shots_against++;
+}
+
+void OnIceStats::AddGoal() {
+  goals++;
+}
+
+void OnIceStats::AddGoalAgainst() {
+  goals_against++;
+}

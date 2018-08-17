@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "PlayerDatabase.hpp"
 #include "CSV.hpp"
 
@@ -13,10 +14,11 @@ Player &PlayerDatabase::lookup(std::string name) {
 }
 
 // the length of years[]
-#define PAST_YEARS 1
+#define PAST_YEARS 2
 
 static std::string years[] = {
-  "17-18"
+  "17-18",
+  "16-17"
 };
 
 static std::string statsPrefix = "/u/kpalway/hock/stats/";
@@ -74,5 +76,20 @@ void PlayerDatabase::initialize() {
 void PlayerDatabase::PredictAll(Replacement &repl) {
   for (PlayerMap::iterator it = player_map.begin(); it != player_map.end(); it++) {
     it->second.Predict(repl);
+  }
+}
+
+/*static bool PointCompare(std::pair<std::string, Player> const &a, std::pair<std::string, Player> const &b) {
+  return a.second.Points() > b.second.Points();
+}*/
+
+void PlayerDatabase::PrintIndividualStats() {
+  IndividualStats::PrintHeading();
+  PlayerMap::iterator beg = player_map.begin();
+  PlayerMap::iterator end = player_map.end();
+  for ( ; beg != end; beg++) {
+    if (beg->second.GamesPlayed() > 0) {
+      beg->second.PrintIndividualStats();
+    }
   }
 }

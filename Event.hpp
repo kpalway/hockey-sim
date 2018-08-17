@@ -18,7 +18,7 @@ public:
   Event(EventType type, Game &game, int period, double time):
     type(type), game(game), period(period), time(time) { }
   virtual ~Event() { }
-  virtual void print() = 0;
+  virtual void print();
   virtual void apply();
   EventType Type() { return type; }
 protected:

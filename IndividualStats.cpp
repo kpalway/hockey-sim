@@ -1,3 +1,5 @@
+#include <iostream>
+#include <iomanip>
 #include "IndividualStats.hpp"
 
 int IndividualStats::GamesPlayed() {
@@ -168,4 +170,49 @@ void IndividualStats::AddStats(IndividualStats &other) {
   shots_blocked += other.shots_blocked;
   faceoffs_won += other.faceoffs_won;
   faceoffs_lost += other.faceoffs_lost;
+}
+
+void IndividualStats::AddGamePlayed() {
+  games_played++;
+}
+
+void IndividualStats::AddTimeOnIce(double time) {
+  time_on_ice += time;
+}
+
+void IndividualStats::AddShotAttempt() {
+  shot_attempts++;
+}
+
+void IndividualStats::AddShot() {
+  shots++;
+}
+
+void IndividualStats::AddGoal() {
+  goals++;
+}
+
+void IndividualStats::AddFirstAssist() {
+  first_assists++;
+}
+
+void IndividualStats::AddSecondAssist() {
+  second_assists++;
+}
+
+void IndividualStats::AddPenalty() {
+  minor_penalties++;
+  penalty_minutes += 2;
+}
+
+void IndividualStats::PrintHeading() {
+  std::cout << std::setw(30) << "Player" << std::setw(4) << "GP" << 
+    std::setw(8) << "TOI" << std::setw(4) << "G" <<
+    std::setw(4) << "A" << std::setw(4) << "P" << std::setw(4) << "S" <<
+    std::setw(4) << "SA" << std::setw(4) << "PIM" << std::endl;
+}
+
+void IndividualStats::Print(std::string player) {
+  std::cout << std::setw(30) << player << std::setw(4) << games_played <<
+    std::setw(8) << std::fixed << std::setprecision(2) << time_on_ice << std::setw(4) << goals << std::setw(4) << (first_assists+second_assists) << std::setw(4) << (goals+first_assists+second_assists) << std::setw(4) << shots << std::setw(4) << shot_attempts << std::endl;
 }

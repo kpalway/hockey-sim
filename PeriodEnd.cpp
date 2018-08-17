@@ -3,6 +3,7 @@
 #include "Game.hpp"
 
 void PeriodEnd::print() {
+  Event::print();
   std::cout << "End of period " << period << std::endl;
 }
 

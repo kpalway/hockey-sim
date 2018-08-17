@@ -29,8 +29,14 @@ public:
   Team(std::string name): name(name) { }
   std::string Name();
   bool Ready();
-  void loadTeam(std::string filename, PlayerDatabase &pdb);
+  bool OnRoster(Player *p);
+  void loadTeam(PlayerDatabase &pdb);
+
+  void AddGamePlayed();
 private:
+  std::vector<Player*> roster;
+  void loadFile(PlayerDatabase &pdb, std::vector< std::vector<Player*>* > &vecs, std::string fname, bool special_teams);
+  void loadColumn(PlayerDatabase &pdb, std::vector< std::vector<std::string> > &mtx, std::vector<Player*> &vec, uint col, bool special_teams);
   std::string name;
 };
 

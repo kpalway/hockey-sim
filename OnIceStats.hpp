@@ -37,6 +37,13 @@ public:
   void loadData(std::vector<std::string> &data);
   void AddStats(OnIceStats &other);
 
+  void AddShotAttempt();
+  void AddShotAttemptAgainst();
+  void AddShot();
+  void AddShotAgainst();
+  void AddGoal();
+  void AddGoalAgainst();
+
   OnIceStats(): shot_attempts(0), shot_attempts_against(0), unblocked_shot_attempts(0),
     unblocked_shot_attempts_against(0), shots(0), shots_against(0), goals(0),
     goals_against(0), scoring_chances(0), scoring_chances_against(0),
