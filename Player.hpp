@@ -27,6 +27,8 @@ public:
   double ShotsPerShotAttempt(Situation sit);
   double GoalsPerShot(Situation sit);
   double FirstAssistsPerOnIceShot(Situation sit);
+  double FirstAssistsPerOnIceGoal(Situation sit);
+  double SecondAssistsPerOnIceGoal(Situation sit);
   double GoalsPerShotAgainst(Situation sit);
   double PenaltiesPerMinute(Situation sit);
 
@@ -86,6 +88,8 @@ private:
     double shots_per_shot_attempt;
     double goals_per_shot;
     double first_assists_per_on_ice_shot;
+    double first_assists_per_on_ice_goal;
+    double second_assists_per_on_ice_goal;
     double penalties_per_minute;
 
     double goals_per_shot_against;

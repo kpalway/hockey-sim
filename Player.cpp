@@ -95,6 +95,14 @@ double Player::FirstAssistsPerOnIceShot(Situation sit) {
   return SituationPrediction(sit).first_assists_per_on_ice_shot;
 }
 
+double Player::FirstAssistsPerOnIceGoal(Situation sit) {
+  return SituationPrediction(sit).first_assists_per_on_ice_goal;
+}
+
+double Player::SecondAssistsPerOnIceGoal(Situation sit) {
+  return SituationPrediction(sit).second_assists_per_on_ice_goal;
+}
+
 double Player::PenaltiesPerMinute(Situation sit) {
   return SituationPrediction(sit).penalties_per_minute;
 }
@@ -155,9 +163,6 @@ bool Player::Ready() {
 void Player::Predict(Replacement &repl) {
   // Fill in the predictions.
 
-  // TODO replace these with actual predictions. For now I'm just copying
-  //  their previous season's results.
-
   IndividualStats &ind = total_individual;
   IndividualStats &pp_ind = total_pp_individual;
   IndividualStats &sh_ind = total_sh_individual;
@@ -176,6 +181,8 @@ void Player::Predict(Replacement &repl) {
   pred.shots_per_shot_attempt = ((double)ind.Shots()) / ind.ShotAttempts();
   pred.goals_per_shot = ((double)ind.Goals()) / ind.Shots();
   pred.first_assists_per_on_ice_shot = ((double)ind.FirstAssists()) / onice.Shots();
+  pred.first_assists_per_on_ice_goal = ((double)ind.FirstAssists()) / onice.Goals();
+  pred.second_assists_per_on_ice_goal = ((double)ind.SecondAssists()) / onice.Goals();
   pred.penalties_per_minute = ((double)ind.Penalties()) / ind.TimeOnIce();
   pred.goals_per_shot_against = ((double)onice.GoalsAgainst())/onice.ShotsAgainst();
 
@@ -187,6 +194,8 @@ void Player::Predict(Replacement &repl) {
   pp_pred.shots_per_shot_attempt = ((double)pp_ind.Shots())/pp_ind.ShotAttempts();
   pp_pred.goals_per_shot = ((double)pp_ind.Goals()) / pp_ind.Shots();
   pp_pred.first_assists_per_on_ice_shot = ((double)pp_ind.FirstAssists())/pp_onice.Shots();
+  pp_pred.first_assists_per_on_ice_goal = ((double)pp_ind.FirstAssists())/pp_onice.Goals();
+  pp_pred.second_assists_per_on_ice_goal = ((double)pp_ind.SecondAssists())/pp_onice.Goals();
   pp_pred.goals_per_shot_against = ((double)pp_onice.GoalsAgainst())/pp_onice.ShotsAgainst();
 
   if (sh_ind.TimeOnIce() < 100) {
@@ -197,6 +206,8 @@ void Player::Predict(Replacement &repl) {
   sh_pred.shots_per_shot_attempt = ((double)sh_ind.Shots())/sh_ind.ShotAttempts();
   sh_pred.goals_per_shot = ((double)sh_ind.Goals()) / sh_ind.Shots();
   sh_pred.first_assists_per_on_ice_shot = ((double)sh_ind.FirstAssists())/sh_onice.Shots();
+  sh_pred.first_assists_per_on_ice_goal = ((double)sh_ind.FirstAssists())/sh_onice.Goals();
+  sh_pred.second_assists_per_on_ice_goal = ((double)sh_ind.SecondAssists())/sh_onice.Goals();
   sh_pred.goals_per_shot_against = ((double)sh_onice.GoalsAgainst())/sh_onice.ShotsAgainst();
 
   predicted = true;

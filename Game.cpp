@@ -280,7 +280,7 @@ Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
 
   std::vector<double> probs;
   for (uint i = 0; i < candidates.size(); i++) {
-    probs.push_back(candidates[i]->FirstAssistsPerOnIceShot(sit));
+    probs.push_back(candidates[i]->FirstAssistsPerOnIceGoal(sit));
   }
   
   std::discrete_distribution<int> dist(probs.begin(), probs.end());
@@ -289,17 +289,23 @@ Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
 
 Player *Game::ChooseSecondAssist(Player *scorer, Player *assist1, bool home) {
   std::vector<Player*> candidates;
+  Situation sit = away_sit;
   if (home) {
+    sit = home_sit;
     candidates.push_back(home_LW);
     candidates.push_back(home_C);
-    candidates.push_back(home_RW);
+    if (home_sit != Situation::SH) {
+      candidates.push_back(home_RW);
+    }
     candidates.push_back(home_LD);
     candidates.push_back(home_RD);
   }
   else {
     candidates.push_back(away_LW);
     candidates.push_back(away_C);
-    candidates.push_back(away_RW);
+    if (away_sit != Situation::SH) {
+      candidates.push_back(away_RW);
+    }
     candidates.push_back(away_LD);
     candidates.push_back(away_RD);
   }
@@ -308,7 +314,7 @@ Player *Game::ChooseSecondAssist(Player *scorer, Player *assist1, bool home) {
 
   std::vector<double> probs;
   for (uint i = 0; i < candidates.size(); i++) {
-    probs.push_back(1);
+    probs.push_back(candidates[i]->SecondAssistsPerOnIceGoal(sit));
   }
   
   std::discrete_distribution<int> dist(probs.begin(), probs.end());
