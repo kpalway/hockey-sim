@@ -6,10 +6,13 @@
 #include "PlayerDatabase.hpp"
 #include "TeamDatabase.hpp"
 
+class Season;
+
 class Simulator {
 public:
   Simulator(std::default_random_engine &RNG, PlayerDatabase &pdb, TeamDatabase &tdb): RNG(RNG), pdb(pdb), tdb(tdb) { }
   void SimulateGame(std::string home, std::string away, uint iters);
+  void SimulateSeason(Season &season);
 private:
   std::default_random_engine &RNG;
   PlayerDatabase &pdb;

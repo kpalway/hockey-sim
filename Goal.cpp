@@ -30,6 +30,8 @@ void Goal::apply() {
   game.AddGoal(team);
 
   scorer->AddGoal(sit);
+  scorer->AddShot(sit);
+  scorer->AddShotAttempt(sit);
   if (assist1 != NULL) {
     assist1->AddFirstAssist(sit);
   }

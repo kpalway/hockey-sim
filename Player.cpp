@@ -115,6 +115,10 @@ int Player::Points() {
   return points;
 }
 
+int Player::Fatigue() {
+  return fatigue;
+}
+
 void Player::PrintIndividualStats() {
   IndividualStats total;
   for (uint i = 0; i < 3; i++) {
@@ -199,6 +203,7 @@ void Player::Predict(Replacement &repl) {
 }
 
 void Player::AddGamePlayed() {
+  fatigue += 2;
   current_individual[Situation::EV].AddGamePlayed();
 }
 
@@ -252,4 +257,11 @@ void Player::AddSecondAssist(Situation sit) {
 
 void Player::AddPenalty() {
   current_individual[Situation::EV].AddPenalty();
+}
+
+void Player::PassDay() {
+  fatigue -= 1;
+  if (fatigue < 0) {
+    fatigue = 0;
+  }
 }

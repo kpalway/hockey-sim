@@ -18,6 +18,7 @@ public:
   Player &lookup(std::string name);
   void initialize();
   void PredictAll(Replacement &repl);
+  void PassDay();
   void PrintIndividualStats();
 private:
   void loadStatFile(std::string year, Situation sit, bool ind);

@@ -11,7 +11,7 @@
 
 class Player {
 public:
-  Player(std::string name) : name(name), predicted(false) { }
+  Player(std::string name) : name(name), predicted(false), fatigue(0) { }
 
   std::string &Name();
   std::vector<Position> &Positions();
@@ -33,6 +33,7 @@ public:
   double PKMinutesPerGame();
   int GamesPlayed();
   int Points();
+  int Fatigue();
   void PrintIndividualStats();
 
   bool Ready();
@@ -56,6 +57,8 @@ public:
   bool IsForward();
   bool IsDefense();
   bool IsGoalie();
+
+  void PassDay();
 
 private:
   std::string name;
@@ -93,6 +96,8 @@ private:
   Prediction sh_pred;
 
   Prediction &SituationPrediction(Situation sit);
+
+  int fatigue;
 };
 
 #endif // PLAYER_HPP

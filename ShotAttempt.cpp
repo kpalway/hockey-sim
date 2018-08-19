@@ -10,4 +10,5 @@ void ShotAttempt::print() {
 void ShotAttempt::apply() {
   Event::apply();
   game.AddShotAttempt(team);
+  player->AddShotAttempt(sit);
 }

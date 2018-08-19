@@ -79,6 +79,12 @@ void PlayerDatabase::PredictAll(Replacement &repl) {
   }
 }
 
+void PlayerDatabase::PassDay() {
+  for (PlayerMap::iterator it = player_map.begin(); it != player_map.end(); it++) {
+    it->second.PassDay();
+  }
+}
+
 /*static bool PointCompare(std::pair<std::string, Player> const &a, std::pair<std::string, Player> const &b) {
   return a.second.Points() > b.second.Points();
 }*/

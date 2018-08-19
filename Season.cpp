@@ -6,7 +6,7 @@
 static const time_t seconds_per_day = 24 * 60 * 60;
 
 void Date::AddDay() {
-  struct tm dt;
+  struct tm dt = { 0, 0, 12 };
   dt.tm_year = year - 1900;
   dt.tm_mon = month - 1;
   dt.tm_mday = day;
@@ -16,6 +16,23 @@ void Date::AddDay() {
   year = dt.tm_year + 1900;
   month = dt.tm_mon + 1;
   day = dt.tm_mday;
+}
+
+bool operator<(Date &d1, Date &d2) {
+  if (d1.year < d2.year) {
+    return true;
+  }
+  if (d1.year == d2.year && d1.month < d2.month) {
+    return true;
+  }
+  if (d1.year == d2.year && d1.month == d2.month && d1.day < d2.day) {
+    return true;
+  }
+  return false;
+}
+
+bool operator<=(Date &d1, Date &d2) {
+  return d1 == d2 || d1 < d2;
 }
 
 void Season::loadSeason() {
@@ -30,6 +47,14 @@ void Season::loadSeason() {
     d.day = stoi(date_str[2]);
     schedule.push_back(std::make_tuple(d, mtx[i][3], mtx[i][2]));
   }
+}
+
+Date Season::StartDate() {
+  return std::get<0>(schedule[0]);
+}
+
+Date Season::EndDate() {
+  return std::get<0>(schedule[schedule.size() - 1]);
 }
 
 Schedule Season::DaySchedule(Date d) {

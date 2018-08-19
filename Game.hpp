@@ -19,7 +19,7 @@ class Penalty;
 
 class Game {
 public:
-  Game(std::default_random_engine &RNG, Team &home, Team &away) : home_team(home), away_team(away), simulated(false), RNG(RNG) { }
+  Game(std::default_random_engine &RNG, Team &home, Team &away) : home_team(home), away_team(away), simulated(false), overtime(false), shootout(false), RNG(RNG) { }
   ~Game();
   bool Ready();
   void Simulate();
@@ -45,6 +45,8 @@ private:
   Team &away_team;
 
   bool simulated;
+  bool overtime;
+  bool shootout;
   int period;
   double time;
   double home_shift_remaining;

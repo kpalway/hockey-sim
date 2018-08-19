@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Simulator.hpp"
 #include "Game.hpp"
+#include "Season.hpp"
 
 void Simulator::SimulateGame(std::string home, std::string away, uint iters) {
   Team &home_team = tdb.lookup(home);
@@ -38,5 +39,28 @@ void Simulator::SimulateGame(std::string home, std::string away, uint iters) {
   }
   else {
     std::cout << home << " " << home_wins << " wins, " << ties << " ties, " << away << " " << away_wins << " wins" << std::endl;
+  }
+}
+
+void Simulator::SimulateSeason(Season &season) {
+  Date date = season.StartDate();
+  Date end_date = season.EndDate();
+
+  while (date <= end_date) {
+    Schedule today = season.DaySchedule(date);
+
+    for (uint i = 0; i < today.size(); i++) {
+      Team &home_team = tdb.lookup(std::get<1>(today[i]));
+      Team &away_team = tdb.lookup(std::get<2>(today[i]));
+      Game game(RNG, home_team, away_team);
+      if (game.Ready()) {
+        game.Simulate();
+      }
+      else {
+        std::cerr << "Game not ready." << std::endl;
+      }
+    }
+    date.AddDay();
+    pdb.PassDay();
   }
 }

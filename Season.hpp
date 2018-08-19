@@ -13,6 +13,8 @@ struct Date {
   friend bool operator==(Date &d1, Date &d2) {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
   }
+  friend bool operator<(Date &d1, Date &d2);
+  friend bool operator<=(Date &d1, Date &d2);
 };
 
 typedef std::tuple<Date, std::string, std::string> Match;
@@ -22,6 +24,8 @@ class Season {
 public:
   Season(std::string year): year(year) { }
   void loadSeason();
+  Date StartDate();
+  Date EndDate();
   Schedule DaySchedule(Date d);
 
 private:

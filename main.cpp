@@ -4,6 +4,7 @@
 #include "PlayerDatabase.hpp"
 #include "TeamDatabase.hpp"
 #include "Simulator.hpp"
+#include "Season.hpp"
 
 int main(int argc, char *argv[]) {
   std::default_random_engine RNG(std::chrono::system_clock::now().time_since_epoch().count());
@@ -20,17 +21,21 @@ int main(int argc, char *argv[]) {
   Simulator sim(RNG, pdb, tdb);
 
   if (argc < 3) {
-    std::cerr << "Invalid command line arguments" << std::endl;
-    exit(1);
-  }
+    std::cout << "Simulating full season" << std::endl;
 
-  std::string home(argv[1]);
-  std::string away(argv[2]);
-  uint games = 7;
-  if (argc == 4) {
-    games = std::stoi(argv[3]);
+    Season season("18-19");
+    season.loadSeason();
+    sim.SimulateSeason(season);
   }
+  else {
+    std::string home(argv[1]);
+    std::string away(argv[2]);
+    uint games = 7;
+    if (argc == 4) {
+      games = std::stoi(argv[3]);
+    }
 
-  sim.SimulateGame(home, away, games);
+    sim.SimulateGame(home, away, games);
+  }
   pdb.PrintIndividualStats();
 }

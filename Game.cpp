@@ -38,14 +38,24 @@ void Game::Simulate() {
   home_RW = home_team.RW[0];
   home_LD = home_team.LD[0];
   home_RD = home_team.RD[0];
-  home_G = home_team.G[0];
+  if (home_team.G[0]->Fatigue() == 0) {
+    home_G = home_team.G[0];
+  }
+  else {
+    home_G = home_team.G[1];
+  }
 
   away_LW = away_team.LW[0];
   away_C = away_team.C[0];
   away_RW = away_team.RW[0];
   away_LD = away_team.LD[0];
   away_RD = away_team.RD[0];
-  away_G = away_team.G[0];
+  if (away_team.G[0]->Fatigue() == 0) {
+    away_G = away_team.G[0];
+  }
+  else {
+    away_G = away_team.G[1];
+  }
 
   while (!simulated) {
     DrawNextEvent();
@@ -86,10 +96,10 @@ void Game::AddShotAttempt(std::string team) {
 
 void Game::AddShot(std::string team) {
   if (IsHome(team)) {
-    AddStat(true, false, true);
+    AddStat(true, true, false);
   }
   else {
-    AddStat(false, false, true);
+    AddStat(false, true, false);
   }
 }
 
@@ -130,6 +140,9 @@ void Game::AddGoal(std::string team) {
   else {
     away_goals++;
     AddStat(false, true, true);
+  }
+  if (overtime) {
+    simulated = true;
   }
 }
 
@@ -193,6 +206,23 @@ void Game::SetTime(double time) {
 
 void Game::NextPeriod() {
   if (period == 3) {
+    if (home_goals == away_goals) {
+      period++;
+      overtime = true;
+    }
+    else {
+      simulated = true;
+    }
+    simulated = true;
+  }
+  else if (period == 4) {
+    shootout = true;
+    if (TrueWithProbability(0.5)) {
+      home_goals++;
+    }
+    else {
+      away_goals++;
+    }
     simulated = true;
   }
   else {
@@ -449,7 +479,7 @@ void Game::DrawNextEvent() {
     goalie_sit = away_sit;
   }
 
-  double period_remaining = 20 - time;
+  double period_remaining = (overtime ? 5 : 20) - time;
 
   Event *ev = NULL;
 
@@ -515,11 +545,11 @@ void Game::DrawNextEvent() {
         ev = new Goal(*this, period, time + attempt_time, team, shooter, assist1, assist2, shooter_sit);
       }
       else {
-        ev = new Shot(*this, period, time + attempt_time, team, shooter, goalie);
+        ev = new Shot(*this, period, time + attempt_time, team, shooter, goalie, shooter_sit);
       }
     }
     else {
-      ev = new ShotAttempt(*this, period, time + attempt_time, team, shooter);
+      ev = new ShotAttempt(*this, period, time + attempt_time, team, shooter, shooter_sit);
     }
   }
   // penalty occurs

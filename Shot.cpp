@@ -10,4 +10,6 @@ void Shot::print() {
 void Shot::apply() {
   Event::apply();
   game.AddShot(team);
+  shooter->AddShot(sit);
+  shooter->AddShotAttempt(sit);
 }
