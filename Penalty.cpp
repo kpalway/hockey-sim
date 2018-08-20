@@ -11,6 +11,7 @@ void Penalty::print() {
 void Penalty::apply() {
   Event::apply();
   game.AddPenalty(this);
+  offender->AddPenalty();
   game.SetPowerPlay(!game.IsHome(team));
 }
 

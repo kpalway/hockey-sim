@@ -61,6 +61,11 @@ public:
   bool IsGoalie();
 
   void PassDay();
+  void GenerateShotAttempt(Situation sit);
+  void GeneratePenalty();
+
+  double ShotAttemptTime(Situation sit);
+  double PenaltyTime();
 
 private:
   std::string name;
@@ -102,6 +107,8 @@ private:
   Prediction &SituationPrediction(Situation sit);
 
   int fatigue;
+  double penalty_time;
+  double shot_attempt_time[3];
 };
 
 #endif // PLAYER_HPP

@@ -8,18 +8,17 @@ class Penalty;
 #include <utility>
 #include <vector>
 #include <string>
-#include <random>
 #include "Team.hpp"
 #include "Penalty.hpp"
 #include "Player.hpp"
 #include "Situation.hpp"
 
 #define SHIFT_LENGTH 0.75
-#define PP_SHIFT_LENGTH 1.25
+#define PP_SHIFT_LENGTH 1.1
 
 class Game {
 public:
-  Game(std::default_random_engine &RNG, Team &home, Team &away) : home_team(home), away_team(away), simulated(false), overtime(false), shootout(false), RNG(RNG) { }
+  Game(Team &home, Team &away) : home_team(home), away_team(away), simulated(false), overtime(false), shootout(false) { }
   ~Game();
   bool Ready();
   void Simulate();
@@ -56,8 +55,6 @@ private:
   std::vector<Penalty*> active_penalties;
   Situation home_sit, away_sit;
 
-  std::default_random_engine &RNG;
-
   Player *home_LW;
   Player *home_C;
   Player *home_RW;
@@ -74,17 +71,19 @@ private:
 
   std::vector<Player*> HomeActive();
   std::vector<Player*> AwayActive();
+  std::vector<Player*> AllActive();
   void AddStat(bool home, bool goal, bool shot);
 
-  double DrawFromExp(double lambda);
-  template <class T>
-  double DrawFromExps(std::vector< std::pair<double, T> > &lambdas, uint &min_ind);
-  bool TrueWithProbability(double prob);
+  void GenerateShotAttempts();
+  void GeneratePenalties();
   Player *ChooseFirstAssist(Player *scorer, bool home);
   Player *ChooseSecondAssist(Player *scorer, Player *assist1, bool home);
   int SelectFwdLine(bool home);
   int SelectDefLine(bool home);
   void DrawNextEvent();
+  bool PlayerIsHome(Player *p);
+  double NextShotAttempt(Player* &p);
+  double NextPenalty(Player* &p);
 
   std::vector<Event*> game_log;
 };

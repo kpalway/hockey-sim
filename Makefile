@@ -3,7 +3,7 @@ INCLUDES = -I/usr/include/GL -I. -I/u3/kpalway/bin/fltk-1.3.4-2/ -I/u3/kpalway/c
 
 CC = g++
 
-CFLAGS = -Wall -g -std=c++11 -funroll-loops -ffast-math -O3
+CFLAGS = -Wall -g -std=c++11 -funroll-loops -ffast-math -O0
 #LIBS = -L/u3/kpalway/bin/fltk-1.3.4-2/lib/ -lfltk -lGL -lpng -lm -g -lfltk_gl -lXext -lXfixes -lX11 -ldl -lXrender -lXcursor -lXinerama
 
 %.o: %.cpp Makefile
@@ -11,7 +11,7 @@ CFLAGS = -Wall -g -std=c++11 -funroll-loops -ffast-math -O3
 	#$(CC) -c -MMD -MT $*.d $(CFLAGS) $(INCLUDES) $< -o $@
 
 TARGET = hockey-sim
-OFILES = main.o Player.o PlayerDatabase.o Team.o TeamDatabase.o IndividualStats.o OnIceStats.o BioStats.o CSV.o Game.o Event.o ShotAttempt.o Shot.o Goal.o PeriodEnd.o LineChange.o Penalty.o Simulator.o Replacement.o PenaltyEnd.o Season.o
+OFILES = main.o Player.o PlayerDatabase.o Team.o TeamDatabase.o IndividualStats.o OnIceStats.o BioStats.o CSV.o Game.o Event.o ShotAttempt.o Shot.o Goal.o PeriodEnd.o LineChange.o Penalty.o Simulator.o Replacement.o PenaltyEnd.o Season.o Probability.o
 
 CPPFILES = $(OFILES:.o=.cpp)
 DFILES = $(OFILES:.o=.d)

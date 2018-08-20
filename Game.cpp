@@ -6,6 +6,7 @@
 #include "PeriodEnd.hpp"
 #include "LineChange.hpp"
 #include "PenaltyEnd.hpp"
+#include "Probability.hpp"
 #include <iostream>
 
 #define PROB_ASSIST1 0.85
@@ -217,7 +218,7 @@ void Game::NextPeriod() {
   }
   else if (period == 4) {
     shootout = true;
-    if (TrueWithProbability(0.5)) {
+    if (Probability::TrueWithProbability(0.5)) {
       home_goals++;
     }
     else {
@@ -228,30 +229,6 @@ void Game::NextPeriod() {
   else {
     period++;
   }
-}
-
-double Game::DrawFromExp(double lambda) {
-  std::exponential_distribution<double> dist(lambda);
-  return dist(RNG);
-}
-
-bool Game::TrueWithProbability(double prob) {
-  std::uniform_real_distribution<double> dist(0, 1);
-  return dist(RNG) <= prob;
-}
-
-template <class T>
-double Game::DrawFromExps(std::vector< std::pair<double, T> > &lambdas, uint &min_ind) {
-  double min_time = 999999;
-  min_ind = 0;
-  for (uint i = 0; i < lambdas.size(); i++) {
-    double time = DrawFromExp(lambdas[i].first);
-    if (time < min_time) {
-      min_time = time;
-      min_ind = i;
-    }
-  }
-  return min_time;
 }
 
 Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
@@ -282,9 +259,8 @@ Player *Game::ChooseFirstAssist(Player *scorer, bool home) {
   for (uint i = 0; i < candidates.size(); i++) {
     probs.push_back(candidates[i]->FirstAssistsPerOnIceGoal(sit));
   }
-  
-  std::discrete_distribution<int> dist(probs.begin(), probs.end());
-  return candidates[dist(RNG)];
+
+  return candidates[Probability::DrawFromDiscrete(probs)];
 }
 
 Player *Game::ChooseSecondAssist(Player *scorer, Player *assist1, bool home) {
@@ -316,9 +292,8 @@ Player *Game::ChooseSecondAssist(Player *scorer, Player *assist1, bool home) {
   for (uint i = 0; i < candidates.size(); i++) {
     probs.push_back(candidates[i]->SecondAssistsPerOnIceGoal(sit));
   }
-  
-  std::discrete_distribution<int> dist(probs.begin(), probs.end());
-  return candidates[dist(RNG)];
+ 
+  return candidates[Probability::DrawFromDiscrete(probs)];
 }
 
 int Game::SelectFwdLine(bool home) {
@@ -327,8 +302,7 @@ int Game::SelectFwdLine(bool home) {
   probs.push_back(27);
   probs.push_back(24);
   probs.push_back(19);
-  std::discrete_distribution<int> dist(probs.begin(), probs.end());
-  return dist(RNG);
+  return Probability::DrawFromDiscrete(probs);
 }
 
 int Game::SelectDefLine(bool home) {
@@ -336,8 +310,7 @@ int Game::SelectDefLine(bool home) {
   probs.push_back(23);
   probs.push_back(20);
   probs.push_back(17);
-  std::discrete_distribution<int> dist(probs.begin(), probs.end());
-  return dist(RNG);
+  return Probability::DrawFromDiscrete(probs);
 }
 
 // when penalty ends
@@ -418,51 +391,59 @@ double Game::PenaltyRemaining() {
   return active_penalties[0]->Remaining();
 }
 
+std::vector<Player*> Game::AllActive() {
+  std::vector<Player*> res = HomeActive();
+  std::vector<Player*> away = AwayActive();
+  res.insert(res.end(), away.begin(), away.end());
+  return res;
+}
+
+bool Game::PlayerIsHome(Player *p) {
+  return p == home_LW || p == home_C || p == home_RW
+    || p == home_LD || p == home_RD;
+}
+
+double Game::NextShotAttempt(Player* &p) {
+  std::vector<Player*> players = AllActive();
+  double min = players[0]->ShotAttemptTime(PlayerIsHome(players[0]) ? home_sit : away_sit);
+  p = players[0];
+  for (uint i = 1; i < players.size(); i++) {
+    double t = players[i]->ShotAttemptTime(PlayerIsHome(players[i]) ? home_sit : away_sit);
+    if (t < min) {
+      min = t;
+      p = players[i];
+    }
+  }
+  return min;
+}
+
+double Game::NextPenalty(Player* &p) {
+  std::vector<Player*> players = AllActive();
+  double min = players[0]->PenaltyTime();
+  p = players[0];
+  for (uint i = 0; i < players.size(); i++) {
+    double t = players[i]->PenaltyTime();
+    if (t < min) {
+      min = t;
+      p = players[i];
+    }
+  }
+  return min;
+}
+
 void Game::DrawNextEvent() {
-  // draw from distribution for each active player's shot attempt rate
-  std::vector< std::pair<double, Player*> > lambdas;
-  lambdas.push_back(std::make_pair(home_LW->ShotAttemptsPerMinute(home_sit), home_LW));
-  lambdas.push_back(std::make_pair(home_C->ShotAttemptsPerMinute(home_sit), home_C));
-  if (home_sit != Situation::SH) {
-    lambdas.push_back(std::make_pair(home_RW->ShotAttemptsPerMinute(home_sit), home_RW));
-  }
-  lambdas.push_back(std::make_pair(home_LD->ShotAttemptsPerMinute(home_sit), home_LD));
-  lambdas.push_back(std::make_pair(home_RD->ShotAttemptsPerMinute(home_sit), home_RD));
-  lambdas.push_back(std::make_pair(away_LW->ShotAttemptsPerMinute(away_sit), away_LW));
-  lambdas.push_back(std::make_pair(away_C->ShotAttemptsPerMinute(away_sit), away_C));
-  if (away_sit !=  Situation::SH) {
-    lambdas.push_back(std::make_pair(away_RW->ShotAttemptsPerMinute(away_sit), away_RW));
-  }
-  lambdas.push_back(std::make_pair(away_LD->ShotAttemptsPerMinute(away_sit), away_LD));
-  lambdas.push_back(std::make_pair(away_RD->ShotAttemptsPerMinute(away_sit), away_RD));
-  
-  uint min_ind;
-  double attempt_time = DrawFromExps(lambdas, min_ind);
 
-  uint pen_ind = 0;
-  double penalty_time = 9999999;
-  bool penalized_home = false;
   Player *penalized = NULL;
+  double penalty_time = 0;
+  bool penalized_home = false;
   if (home_sit == Situation::EV) {
-    std::vector< std::pair<double, Player*> > plambdas;
-    plambdas.push_back(std::make_pair(home_LW->PenaltiesPerMinute(home_sit), home_LW));
-    plambdas.push_back(std::make_pair(home_C->PenaltiesPerMinute(home_sit), home_C));
-    plambdas.push_back(std::make_pair(home_RW->PenaltiesPerMinute(home_sit), home_RW));
-    plambdas.push_back(std::make_pair(home_LD->PenaltiesPerMinute(home_sit), home_LD));
-    plambdas.push_back(std::make_pair(home_RD->PenaltiesPerMinute(home_sit), home_RD));
-    plambdas.push_back(std::make_pair(away_LW->PenaltiesPerMinute(away_sit), away_LW));
-    plambdas.push_back(std::make_pair(away_C->PenaltiesPerMinute(away_sit), away_C));
-    plambdas.push_back(std::make_pair(away_RW->PenaltiesPerMinute(away_sit), away_RW));
-    plambdas.push_back(std::make_pair(away_LD->PenaltiesPerMinute(away_sit), away_LD));
-    plambdas.push_back(std::make_pair(away_RD->PenaltiesPerMinute(away_sit), away_RD));
-
-    penalty_time = DrawFromExps(plambdas, pen_ind);
-    penalized = plambdas[pen_ind].second;
-    penalized_home = pen_ind <= 4;
+    penalty_time = NextPenalty(penalized);
+    penalized_home = PlayerIsHome(penalized);
   }
-  
+    
   Player *shooter = NULL;
-  bool shooter_home = min_ind <= (home_sit == Situation::SH ? 3 : 4);
+  double attempt_time = NextShotAttempt(shooter);
+  bool shooter_home = PlayerIsHome(shooter);
 
   std::string team = away_team.Name();
   if (shooter_home) {
@@ -473,8 +454,6 @@ void Game::DrawNextEvent() {
   if (penalized_home) {
     penalized_team = home_team.Name();
   }
-
-  shooter = lambdas[min_ind].second;
 
   Player *goalie = home_G;
   Situation shooter_sit = away_sit;
@@ -529,20 +508,20 @@ void Game::DrawNextEvent() {
     }
   }
   // shot attempt will happen
-  else if (attempt_time < penalty_time && attempt_time < period_remaining && (EvenStrength() || attempt_time < PenaltyRemaining())) {
+  else if ((penalized == NULL || attempt_time < penalty_time) && attempt_time < period_remaining && (EvenStrength() || attempt_time < PenaltyRemaining())) {
     // if shot goes on net
-    if (TrueWithProbability(shooter->ShotsPerShotAttempt(shooter_sit))) {
+    if (Probability::TrueWithProbability(shooter->ShotsPerShotAttempt(shooter_sit))) {
       double goal_prob = shooter->GoalsPerShot(shooter_sit)/(1-goalie->GoalsPerShotAgainst(goalie_sit)+shooter->GoalsPerShot(shooter_sit));
       // if shot goes in
-      if (TrueWithProbability(goal_prob)) {
+      if (Probability::TrueWithProbability(goal_prob)) {
         Player *assist1 = NULL;
         Player *assist2 = NULL;
         // if there is a first assist
-        if (TrueWithProbability(PROB_ASSIST1)) {
+        if (Probability::TrueWithProbability(PROB_ASSIST1)) {
           // proportionally decide which player gets the first assist
           assist1 = ChooseFirstAssist(shooter, shooter_home);
           // if there is a second assist
-          if (TrueWithProbability(PROB_ASSIST2)) {
+          if (Probability::TrueWithProbability(PROB_ASSIST2)) {
             // uniformly decide the second assist
             assist2 = ChooseSecondAssist(shooter, assist1, shooter_home);
           }

@@ -10,7 +10,7 @@ void Simulator::SimulateGame(std::string home, std::string away, uint iters) {
   int ties = 0;
   int away_wins = 0;
   for (uint i = 0; i < iters; i++) {
-    Game game(RNG, home_team, away_team);
+    Game game(home_team, away_team);
     if (game.Ready()) {
       game.Simulate();
       if (game.HomeWins()) {
@@ -52,7 +52,7 @@ void Simulator::SimulateSeason(Season &season) {
     for (uint i = 0; i < today.size(); i++) {
       Team &home_team = tdb.lookup(std::get<1>(today[i]));
       Team &away_team = tdb.lookup(std::get<2>(today[i]));
-      Game game(RNG, home_team, away_team);
+      Game game(home_team, away_team);
       if (game.Ready()) {
         game.Simulate();
       }

@@ -1,13 +1,12 @@
 #include <iostream>
-#include <random>
-#include <chrono>
 #include "PlayerDatabase.hpp"
 #include "TeamDatabase.hpp"
 #include "Simulator.hpp"
 #include "Season.hpp"
+#include "Probability.hpp"
 
 int main(int argc, char *argv[]) {
-  std::default_random_engine RNG(std::chrono::system_clock::now().time_since_epoch().count());
+  Probability::initialize();
 
   PlayerDatabase pdb;
   pdb.initialize();
@@ -18,7 +17,7 @@ int main(int argc, char *argv[]) {
 
   pdb.PredictAll(repl);
 
-  Simulator sim(RNG, pdb, tdb);
+  Simulator sim(pdb, tdb);
 
   if (argc < 3) {
     std::cout << "Simulating full season" << std::endl;

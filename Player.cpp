@@ -1,5 +1,6 @@
-#include "Player.hpp"
 #include <iostream>
+#include "Player.hpp"
+#include "Probability.hpp"
 
 std::string &Player::Name() {
   return name;
@@ -210,6 +211,11 @@ void Player::Predict(Replacement &repl) {
   sh_pred.second_assists_per_on_ice_goal = ((double)sh_ind.SecondAssists())/sh_onice.Goals();
   sh_pred.goals_per_shot_against = ((double)sh_onice.GoalsAgainst())/sh_onice.ShotsAgainst();
 
+  GenerateShotAttempt(Situation::EV);
+  GenerateShotAttempt(Situation::PP);
+  GenerateShotAttempt(Situation::SH);
+  GeneratePenalty();
+  
   predicted = true;
 }
 
@@ -220,10 +226,19 @@ void Player::AddGamePlayed() {
 
 void Player::AddTimeOnIce(Situation sit, double time) {
   current_individual[sit].AddTimeOnIce(time);
+  shot_attempt_time[sit] -= time;
+  if (shot_attempt_time[sit] < 0) {
+    shot_attempt_time[sit] = 0;
+  }
+  penalty_time -= time;
+  if (penalty_time < 0) {
+    penalty_time = 0;
+  }
 }
 
 void Player::AddShotAttempt(Situation sit) {
   current_individual[sit].AddShotAttempt();
+  GenerateShotAttempt(sit);
 }
 
 void Player::AddShotAttemptFor(Situation sit) {
@@ -268,6 +283,7 @@ void Player::AddSecondAssist(Situation sit) {
 
 void Player::AddPenalty() {
   current_individual[Situation::EV].AddPenalty();
+  GeneratePenalty();
 }
 
 void Player::PassDay() {
@@ -275,4 +291,20 @@ void Player::PassDay() {
   if (fatigue < 0) {
     fatigue = 0;
   }
+}
+
+void Player::GenerateShotAttempt(Situation sit) {
+  shot_attempt_time[sit] = Probability::DrawFromExp(ShotAttemptsPerMinute(sit));
+}
+
+void Player::GeneratePenalty() {
+  penalty_time = Probability::DrawFromExp(PenaltiesPerMinute(Situation::EV));
+}
+
+double Player::ShotAttemptTime(Situation sit) {
+  return shot_attempt_time[sit];
+}
+
+double Player::PenaltyTime() {
+  return penalty_time;
 }
