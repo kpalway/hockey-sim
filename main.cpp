@@ -37,4 +37,5 @@ int main(int argc, char *argv[]) {
     sim.SimulateGame(home, away, games);
   }
   pdb.PrintIndividualStats();
+  tdb.PrintStandings();
 }

@@ -59,6 +59,7 @@ void Simulator::SimulateSeason(Season &season) {
       else {
         std::cerr << "Game not ready." << std::endl;
       }
+      
     }
     date.AddDay();
     pdb.PassDay();

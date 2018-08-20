@@ -14,8 +14,10 @@ class TeamDatabase {
 public:
   Team &lookup(std::string name);
   void initialize(PlayerDatabase &pdb);
+  void PrintStandings();
 private:
-  std::map<std::string, Team, StringCompare> team_map;
+  typedef std::map<std::string, Team, StringCompare> TeamMap;
+  TeamMap team_map;
 };
 
 #define NUM_TEAMS 31

@@ -62,6 +62,25 @@ void Game::Simulate() {
     DrawNextEvent();
     game_log[game_log.size() - 1]->apply();
   }
+
+  Team *winner = &away_team;
+  Team *loser = &home_team;
+  if (home_goals > away_goals) {
+    winner = &home_team;
+    loser = &away_team;
+  }
+  if (shootout) {
+    winner->AddShootoutWin();
+    loser->AddShootoutLoss();
+  }
+  else if (overtime) {
+    winner->AddOvertimeWin();
+    loser->AddOvertimeLoss();
+  }
+  else {
+    winner->AddRegulationWin();
+    loser->AddRegulationLoss();
+  }
 }
 
 void Game::PrintBoxScore() {

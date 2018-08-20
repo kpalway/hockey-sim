@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 #include "Team.hpp"
 #include "CSV.hpp"
@@ -131,4 +132,58 @@ void Team::AddGamePlayed() {
       roster[i]->AddGamePlayed();
     }
   }
+}
+
+void Team::AddRegulationWin() {
+  regulation_wins++;
+  points += 2;
+}
+
+void Team::AddOvertimeWin() {
+  overtime_wins++;
+  points += 2;
+}
+
+void Team::AddShootoutWin() {
+  shootout_wins++;
+  points += 2;
+}
+
+void Team::AddRegulationLoss() {
+  regulation_losses++;
+}
+
+void Team::AddOvertimeLoss() {
+  overtime_losses++;
+  points++;
+}
+
+void Team::AddShootoutLoss() {
+  shootout_losses++;
+  points++;
+}
+
+int Team::Points() {
+  return points;
+}
+
+int Team::Wins() {
+  return regulation_wins + overtime_wins + shootout_wins;
+}
+
+int Team::Losses() {
+  return regulation_losses;
+}
+
+int Team::OvertimeShootoutLosses() {
+  return overtime_losses + shootout_losses;
+}
+
+void Team::PrintRecordHeading() {
+  std::cout << "      P  W  L OT" << std::endl;
+}
+
+void Team::PrintRecord() {
+  std::cout << name << " " << std::setw(3) << Points() << " " << std::setw(2) << Wins() << " " << std::setw(2) << Losses()
+    << " " << std::setw(2) << OvertimeShootoutLosses() << std::endl;
 }
