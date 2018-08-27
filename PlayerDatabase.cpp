@@ -99,3 +99,11 @@ void PlayerDatabase::PrintIndividualStats() {
     }
   }
 }
+
+void PlayerDatabase::ResetStats() {
+  PlayerMap::iterator beg = player_map.begin();
+  PlayerMap::iterator end = player_map.end();
+  for ( ; beg != end; beg++) {
+    beg->second.ResetStats();
+  }
+}

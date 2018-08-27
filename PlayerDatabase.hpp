@@ -20,6 +20,7 @@ public:
   void PredictAll(Replacement &repl);
   void PassDay();
   void PrintIndividualStats();
+  void ResetStats();
 private:
   void loadStatFile(std::string year, Situation sit, bool ind);
   typedef std::map<std::string, Player, StringCompare> PlayerMap;

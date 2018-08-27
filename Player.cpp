@@ -136,6 +136,16 @@ void Player::PrintIndividualStats() {
   total.Print(name);
 }
 
+void Player::ResetStats() {
+  IndividualStats total;
+  for (uint i = 0; i < 3; i++) {
+    total.AddStats(current_individual[i]);
+    current_individual[i] = IndividualStats();
+  }
+  gen_individual.push_back(total);
+
+}
+
 double Player::GoalsPerShotAgainst(Situation sit) {
   return SituationPrediction(sit).goals_per_shot_against;
 }

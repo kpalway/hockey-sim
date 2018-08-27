@@ -11,7 +11,7 @@ class Simulator {
 public:
   Simulator(PlayerDatabase &pdb, TeamDatabase &tdb): pdb(pdb), tdb(tdb) { }
   void SimulateGame(std::string home, std::string away, uint iters);
-  void SimulateSeason(Season &season);
+  void SimulateSeason(Season &season, int iterations);
 private:
   PlayerDatabase &pdb;
   TeamDatabase &tdb;

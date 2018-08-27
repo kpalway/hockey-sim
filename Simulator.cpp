@@ -42,26 +42,31 @@ void Simulator::SimulateGame(std::string home, std::string away, uint iters) {
   }
 }
 
-void Simulator::SimulateSeason(Season &season) {
-  Date date = season.StartDate();
-  Date end_date = season.EndDate();
+void Simulator::SimulateSeason(Season &season, int iterations) {
 
-  while (date <= end_date) {
-    Schedule today = season.DaySchedule(date);
+  for (int i = 0; i < iterations; i++) {
+    Date date = season.StartDate();
+    Date end_date = season.EndDate();
 
-    for (uint i = 0; i < today.size(); i++) {
-      Team &home_team = tdb.lookup(std::get<1>(today[i]));
-      Team &away_team = tdb.lookup(std::get<2>(today[i]));
-      Game game(home_team, away_team);
-      if (game.Ready()) {
-        game.Simulate();
+    while (date <= end_date) {
+      Schedule today = season.DaySchedule(date);
+
+      for (uint i = 0; i < today.size(); i++) {
+        Team &home_team = tdb.lookup(std::get<1>(today[i]));
+        Team &away_team = tdb.lookup(std::get<2>(today[i]));
+        Game game(home_team, away_team);
+        if (game.Ready()) {
+          game.Simulate();
+        }
+        else {
+          std::cerr << "Game not ready." << std::endl;
+        }
+        
       }
-      else {
-        std::cerr << "Game not ready." << std::endl;
-      }
-      
+      date.AddDay();
+      pdb.PassDay();
     }
-    date.AddDay();
-    pdb.PassDay();
+
+    pdb.ResetStats();
   }
 }

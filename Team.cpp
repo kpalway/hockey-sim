@@ -135,48 +135,48 @@ void Team::AddGamePlayed() {
 }
 
 void Team::AddRegulationWin() {
-  regulation_wins++;
-  points += 2;
+  stats.regulation_wins++;
+  stats.points += 2;
 }
 
 void Team::AddOvertimeWin() {
-  overtime_wins++;
-  points += 2;
+  stats.overtime_wins++;
+  stats.points += 2;
 }
 
 void Team::AddShootoutWin() {
-  shootout_wins++;
-  points += 2;
+  stats.shootout_wins++;
+  stats.points += 2;
 }
 
 void Team::AddRegulationLoss() {
-  regulation_losses++;
+  stats.regulation_losses++;
 }
 
 void Team::AddOvertimeLoss() {
-  overtime_losses++;
-  points++;
+  stats.overtime_losses++;
+  stats.points++;
 }
 
 void Team::AddShootoutLoss() {
-  shootout_losses++;
-  points++;
+  stats.shootout_losses++;
+  stats.points++;
 }
 
 int Team::Points() {
-  return points;
+  return stats.points;
 }
 
 int Team::Wins() {
-  return regulation_wins + overtime_wins + shootout_wins;
+  return stats.regulation_wins + stats.overtime_wins + stats.shootout_wins;
 }
 
 int Team::Losses() {
-  return regulation_losses;
+  return stats.regulation_losses;
 }
 
 int Team::OvertimeShootoutLosses() {
-  return overtime_losses + shootout_losses;
+  return stats.overtime_losses + stats.shootout_losses;
 }
 
 void Team::PrintRecordHeading() {
@@ -186,4 +186,9 @@ void Team::PrintRecordHeading() {
 void Team::PrintRecord() {
   std::cout << name << " " << std::setw(3) << Points() << " " << std::setw(2) << Wins() << " " << std::setw(2) << Losses()
     << " " << std::setw(2) << OvertimeShootoutLosses() << std::endl;
+}
+
+void Team::ResetStats() {
+  gen_stats.push_back(stats);
+  stats = TeamStats();
 }

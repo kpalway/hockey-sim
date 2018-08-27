@@ -37,6 +37,7 @@ public:
   int Points();
   int Fatigue();
   void PrintIndividualStats();
+  void ResetStats();
 
   bool Ready();
   void Predict(Replacement &repl);
@@ -82,6 +83,8 @@ private:
   std::vector<OnIceStats> on_ice;
   std::vector<OnIceStats> pp_on_ice;
   std::vector<OnIceStats> sh_on_ice;
+
+  std::vector<IndividualStats> gen_individual;
 
   IndividualStats current_individual[3];
   OnIceStats current_on_ice[3];

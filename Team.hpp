@@ -1,10 +1,11 @@
+#ifndef TEAM_HPP
+#define TEAM_HPP
+
 #include <vector>
 #include <string>
 #include "Player.hpp"
 #include "PlayerDatabase.hpp"
-
-#ifndef TEAM_HPP
-#define TEAM_HPP
+#include "TeamStats.hpp"
 
 class Team {
 public:
@@ -26,7 +27,7 @@ public:
   std::vector<Player*> SHLD;
   std::vector<Player*> SHRD;
 
-  Team(std::string name): name(name), regulation_wins(0), overtime_wins(0), shootout_wins(0), regulation_losses(0), overtime_losses(0), shootout_losses(0), points(0) { }
+  Team(std::string name): name(name) { }
   std::string Name();
   bool Ready();
   bool OnRoster(Player *p);
@@ -46,19 +47,15 @@ public:
 
   static void PrintRecordHeading();
   void PrintRecord();
+  void ResetStats();
 private:
   std::vector<Player*> roster;
   void loadFile(PlayerDatabase &pdb, std::vector< std::vector<Player*>* > &vecs, std::string fname, bool special_teams);
   void loadColumn(PlayerDatabase &pdb, std::vector< std::vector<std::string> > &mtx, std::vector<Player*> &vec, uint col, bool special_teams);
   std::string name;
 
-  int regulation_wins;
-  int overtime_wins;
-  int shootout_wins;
-  int regulation_losses;
-  int overtime_losses;
-  int shootout_losses;
-  int points;
+  TeamStats stats;
+  std::vector<TeamStats> gen_stats;
 };
 
 #endif // TEAM_HPP
