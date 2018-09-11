@@ -14,11 +14,12 @@ Player &PlayerDatabase::lookup(std::string name) {
 }
 
 // the length of years[]
-#define PAST_YEARS 2
+#define PAST_YEARS 3
 
 static std::string years[] = {
   "17-18",
-  "16-17"
+  "16-17",
+  "15-16"
 };
 
 static std::string statsPrefix = "/u/kpalway/hock/stats/";
