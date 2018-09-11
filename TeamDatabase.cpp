@@ -42,6 +42,12 @@ void TeamDatabase::PrintStandings() {
 
   Team::PrintRecordHeading();
   for (uint i = 0; i < teams.size(); i++) {
-    teams[i]->PrintRecord();
+    teams[i]->PrintAvgRecord();
+  }
+}
+
+void TeamDatabase::ResetStats() {
+  for (TeamMap::iterator it = team_map.begin(); it != team_map.end(); it++) {
+    it->second.ResetStats();
   }
 }

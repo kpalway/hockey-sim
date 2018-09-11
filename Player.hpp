@@ -37,6 +37,7 @@ public:
   int Points();
   int Fatigue();
   void PrintIndividualStats();
+  void PrintAvgIndividualStats();
   void ResetStats();
 
   bool Ready();

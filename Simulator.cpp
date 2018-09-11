@@ -68,5 +68,6 @@ void Simulator::SimulateSeason(Season &season, int iterations) {
     }
 
     pdb.ResetStats();
+    tdb.ResetStats();
   }
 }

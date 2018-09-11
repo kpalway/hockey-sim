@@ -15,6 +15,7 @@ public:
   Team &lookup(std::string name);
   void initialize(PlayerDatabase &pdb);
   void PrintStandings();
+  void ResetStats();
 private:
   typedef std::map<std::string, Team, StringCompare> TeamMap;
   TeamMap team_map;

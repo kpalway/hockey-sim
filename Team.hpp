@@ -47,6 +47,7 @@ public:
 
   static void PrintRecordHeading();
   void PrintRecord();
+  void PrintAvgRecord();
   void ResetStats();
 private:
   std::vector<Player*> roster;

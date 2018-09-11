@@ -188,6 +188,25 @@ void Team::PrintRecord() {
     << " " << std::setw(2) << OvertimeShootoutLosses() << std::endl;
 }
 
+void Team::PrintAvgRecord() {
+  double points = 0;
+  double wins = 0;
+  double losses = 0;
+  double OTSOL = 0;
+  for (uint i = 0; i < gen_stats.size(); i++) {
+    stats = gen_stats[i];
+    points += Points();
+    wins += Wins();
+    losses += Losses();
+    OTSOL += OvertimeShootoutLosses();
+  }
+  points /= gen_stats.size();
+  wins /= gen_stats.size();
+  losses /= gen_stats.size();
+  OTSOL /= gen_stats.size();
+  PrintRecord();
+}
+
 void Team::ResetStats() {
   gen_stats.push_back(stats);
   stats = TeamStats();

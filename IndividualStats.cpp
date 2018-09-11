@@ -214,5 +214,5 @@ void IndividualStats::PrintHeading() {
 
 void IndividualStats::Print(std::string player) {
   std::cout << std::setw(30) << player << std::setw(4) << games_played <<
-    std::setw(8) << std::fixed << std::setprecision(2) << time_on_ice << std::setw(4) << goals << std::setw(4) << (first_assists+second_assists) << std::setw(4) << (goals+first_assists+second_assists) << std::setw(4) << shots << std::setw(4) << shot_attempts << std::endl;
+    std::setw(8) << std::fixed << std::setprecision(2) << time_on_ice << std::setw(4) << goals << std::setw(4) << (first_assists+second_assists) << std::setw(4) << (goals+first_assists+second_assists) << std::setw(4) << shots << std::setw(4) << shot_attempts << std::setw(4) << penalty_minutes << std::endl;
 }

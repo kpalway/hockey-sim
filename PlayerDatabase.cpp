@@ -95,7 +95,7 @@ void PlayerDatabase::PrintIndividualStats() {
   PlayerMap::iterator end = player_map.end();
   for ( ; beg != end; beg++) {
     if (beg->second.GamesPlayed() > 0) {
-      beg->second.PrintIndividualStats();
+      beg->second.PrintAvgIndividualStats();
     }
   }
 }

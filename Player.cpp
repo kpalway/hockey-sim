@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include "Player.hpp"
 #include "Probability.hpp"
 
@@ -134,6 +135,23 @@ void Player::PrintIndividualStats() {
     total.AddStats(current_individual[i]);
   }
   total.Print(name);
+}
+
+void Player::PrintAvgIndividualStats() {
+  IndividualStats total;
+  for (uint i = 0; i < gen_individual.size(); i++) {
+    total.AddStats(gen_individual[i]);
+  }
+  uint div = gen_individual.size();
+  double games = total.GamesPlayed() / div;
+  double toi = total.TimeOnIce() / div;
+  double goals = total.Goals() / div;
+  double assists = (total.FirstAssists() + total.SecondAssists()) / div;
+  double shots = total.Shots() / div;
+  double shot_attempts = total.ShotAttempts() / div;
+  double pims = total.PenaltyMinutes() / div;
+  std::cout << std::setw(30) << name << std::setw(4) << games <<
+    std::setw(8) << std::fixed << std::setprecision(2) << toi << std::setw(4) << goals << std::setw(4) << assists << std::setw(4) << (goals+assists) << std::setw(4) << shots << std::setw(4) << shot_attempts << std::setw(4) << pims << std::endl;
 }
 
 void Player::ResetStats() {

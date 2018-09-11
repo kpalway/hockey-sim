@@ -24,7 +24,12 @@ int main(int argc, char *argv[]) {
 
     Season season("18-19");
     season.loadSeason();
-    sim.SimulateSeason(season, 1000);
+    int iters = 10;
+    if (argc == 2) {
+      std::string iters_str(argv[1]);
+      iters = std::stoi(iters_str);
+    }
+    sim.SimulateSeason(season, iters);
   }
   else {
     std::string home(argv[1]);
