@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
       iters = std::stoi(iters_str);
     }
     sim.SimulateSeason(season, iters);
+    pdb.PrintIndividualStats();
   }
   else {
     std::string home(argv[1]);
@@ -41,6 +42,4 @@ int main(int argc, char *argv[]) {
 
     sim.SimulateGame(home, away, games);
   }
-  pdb.PrintIndividualStats();
-  tdb.PrintStandings();
 }

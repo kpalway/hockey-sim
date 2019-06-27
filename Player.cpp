@@ -143,6 +143,12 @@ void Player::PrintAvgIndividualStats() {
     total.AddStats(gen_individual[i]);
   }
   uint div = gen_individual.size();
+  if (div == 0) {
+    for (uint i = 0; i < 3; i++) {
+      total.AddStats(current_individual[i]);
+    }
+    div = 1;
+  }
   double games = total.GamesPlayed() / div;
   double toi = total.TimeOnIce() / div;
   double goals = total.Goals() / div;
